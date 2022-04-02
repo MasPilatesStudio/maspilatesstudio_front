@@ -1,3 +1,15 @@
 @import 'node_modules/bootstrap/scss/bootstrap';
+@import url('https://fonts.googleapis.com/css2?family=Quicksand:wght@400;500;600&display=swap');
+@import './varibles';
 
-@import './varibles'
+img {
+  max-width: 100%;
+  max-height: 100%;
+  object-fit: cover;
+}
+
+.row {
+  margin: 0 auto;
+  width: 100%;
+}
+
