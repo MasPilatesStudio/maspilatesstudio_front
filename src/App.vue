@@ -7,8 +7,7 @@
       style="max-width:100%">
       <router-view name="header" />
       <router-view
-        :size="size"
-        class="pb-5" />
+        :size="size" />
     </div>
   </div>
 </template>
@@ -33,12 +32,18 @@ export default {
 <style lang="scss">
 @import 'src/assets/varibles';
 #app {
+  // width: 100%;
+  // height: 100%;
   font-family: 'Quicksand', sans-serif, sans-serif, Avenir, Helvetica;
   font-weight: 500;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   text-align: center;
-  color: #2c3e50;
+  color: $secondary-color;
+}
+
+.full-height {
+  min-height: 100vh;
 }
 
 </style>
