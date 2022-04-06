@@ -49,7 +49,7 @@ export default {
 .header {
   position: fixed;
   width: 100%;
-  z-index: 1;
+  z-index: 100;
   left: 0;
   top: 0;
 }
@@ -67,7 +67,7 @@ export default {
   padding-bottom: 15px;
   text-transform: uppercase;
   letter-spacing: 1.5px;
-  font-weight: 600;
+  font-weight: 500;
 }
 
 @media(min-width: 850px) {

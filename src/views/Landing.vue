@@ -13,28 +13,52 @@
     <div id="about" class="bg-light p-3 p-md-5">
       <div class="row">
         <div class="col-lg">
-          <img src="../assets/header_t.png" height="120" class="m-4">
+          <img src="../assets/undraw_pilates_gpdb.svg" height="120" class="m-4">
+          <h3 class="font-weight-bold">Pilates Matwork</h3>
           <h5 class="ml-md-4 mr-md-4">
-            Plan your next adventure by setting a daily spending budget.
-            We make it easy to break your expenses down by category,
-            giving you more time to plan the important tings!
+            Este tipo de entrenamiento se realiza sobre una colchoneta siendo una actividad muy
+            beneficiosa para el cuerpo y que puede ser practicada por todos.
           </h5>
         </div>
         <div class="col-lg">
-          <img src="../assets/header_t.png" height="120" class="m-4">
+          <img src="../assets/undraw_stability_ball_b-4-ia.svg" height="120" class="m-4">
+          <h3 class="font-weight-bold">Pilates con Materiales</h3>
           <h5 class="ml-md-4 mr-md-4">
-            Use the app to track how much money you’ve saved towards your trips
-            total budgeted goal. Know exactly how much more you need to save,
-            and how much time you have left to save.
+            Es bueno para fortalecer toda la musculatura del cuerpo. Se han añadido materiales
+            a las clases de Pilates con el objetivo de aumentar la intensidad y variedad de los ejercicios.
           </h5>
         </div>
         <div class="col-lg">
           <!-- Icon made by Freepik perfect from www.flaticon.com -->
-          <img src="../assets/header_t.png" height="120" class="m-4">
+          <img src="../assets/undraw_meditation_re_gll0.svg" height="120" class="m-4">
+          <h3 class="font-weight-bold">Pilates Terapéutico</h3>
           <h5 class="ml-md-4 mr-md-4">
-            When the day of your trip comes, have the peace of mind that you
-            planned out your expenses. Never worry about money on a trip again!
+            Para aquellas personas con alguna lesión o patología que quieran fortalecer su cuerpo sin dañarlo,
+            o simplemente quieran obtener un control integral de su cuerpo y cuidarse.
           </h5>
+        </div>
+      </div>
+    </div>
+    <div id="schedule" class="p-3 p-md-5">
+      <div class="row">
+        <div class="col-lg">
+          <h2>Horario</h2>
+          <b-table
+            :sticky-header="stickyHeader"
+            :no-border-collapse="noCollapse"
+            responsive
+            :items="items"
+            :fields="fields" >
+            <!-- We are using utility class `text-nowrap` to help illustrate horizontal scrolling -->
+            <template #head(id)>
+              <div class="text-nowrap"></div>
+            </template>
+            <template #head()="scope">
+              <div class="text-nowrap">
+                {{ scope.label }}
+              </div>
+            </template>
+          </b-table>
         </div>
       </div>
     </div>
@@ -51,7 +75,7 @@
           <b-form>
             <b-form-input
               type="email"
-              class="mb-2 mr-sm-2 mb-sm-0"
+              class="mb-2 mr-sm-2 mb-sm-2"
               placeholder="Enter Your Email">
             </b-form-input>
 
@@ -98,7 +122,29 @@ export default {
       show_contact: true,
       contact_email: '',
       contact_message: '',
-      contact_notice: ''
+      contact_notice: '',
+      fields: [
+        { key: 'id', stickyColumn: true, isRowHeader: true, variant: 'primary' },
+        'Lunes',
+        'Martes',
+        'Miércoles',
+        'Jueves',
+        'Viernes'
+        // { key: 'c', stickyColumn: true, variant: 'info' },
+        // 'k',
+        // 'l'
+      ],
+      items: [
+        { id: '8:00 - 8:50', Lunes: 'PILATES', Martes: '-', Miércoles: 'PILATES', Jueves: '-', Viernes: '-' },
+        { id: '9:10 - 10:00', Lunes: 'PILATES', Martes: '-', Miércoles: 'PILATES', Jueves: '-', Viernes: 'ENTRENAMIENTO FUNCIONAL' },
+        { id: '', Lunes: '', Martes: '', Miércoles: '', Jueves: '', Viernes: '' },
+        { id: '15:30 - 16:20', Lunes: 'PILATES', Martes: 'PILATES', Miércoles: 'PILATES', Jueves: 'PILATES', Viernes: '-' },
+        { id: '16:30 - 17:20', Lunes: 'PILATES TERAPÉUTICO', Martes: 'PILATES', Miércoles: 'PILATES TERAPÉUTICO', Jueves: 'CORE', Viernes: '-' },
+        { id: '17:30 - 18:20', Lunes: 'PILATES', Martes: '-', Miércoles: 'PILATES', Jueves: '-', Viernes: '-' },
+        { id: '18:30 - 19:20', Lunes: '-', Martes: 'PILATES', Miércoles: '-', Jueves: 'PILATES', Viernes: '-' },
+        { id: '19:30 - 20:20', Lunes: 'PILATES', Martes: 'PILATES', Miércoles: 'PILATES', Jueves: 'PILATES', Viernes: '-' },
+        { id: '20:30 - 21:20', Lunes: 'PILATES', Martes: '-', Miércoles: 'PILATES', Jueves: '-', Viernes: '-' }
+      ]
     }
   }
 }
@@ -116,6 +162,9 @@ export default {
   }
   #about {
     min-height: 40vh;
+  }
+  #schedule {
+    background-color: $primary-color;
   }
   #contact {
     background-color: $third-color;
