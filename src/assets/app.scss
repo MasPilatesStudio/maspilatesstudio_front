@@ -9,14 +9,32 @@
   background-color: $third-color-hover;
 }
 
+.content {
+  margin-top: 125px;
+}
+
+.card {
+  box-shadow: rgba(50, 50, 93, 0.25) 0px 6px 12px -2px, rgba(0, 0, 0, 0.3) 0px 3px 7px -3px;
+  border: none;
+  background-color: $white;
+  box-shadow: 10px;
+
+  .card-header {
+    border: none;
+    background-color: $white;
+  }
+}
+
 body {
   margin: 0;
   min-width: 320px;
+  background-color: $primary-color;
 }
 
 .row {
   margin: 0 auto;
   width: 100%;
+  @extend .p-0
 }
 
 img {

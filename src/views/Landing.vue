@@ -29,7 +29,6 @@
           </h5>
         </div>
         <div class="col-lg">
-          <!-- Icon made by Freepik perfect from www.flaticon.com -->
           <img src="../assets/undraw_meditation_re_gll0.svg" height="120" class="m-4">
           <h3 class="font-weight-bold">Pilates Terapéutico</h3>
           <h5 class="ml-md-4 mr-md-4">
@@ -85,7 +84,7 @@
               placeholder="Enter Your Password">
             </b-form-input>
           </b-form>
-            <p class="pt-2">¿Aún no estás registrado? <a href="#" class="enlace-black"> Crear cuenta </a></p>
+            <p class="pt-2">¿Aún no estás registrado? <router-link class="enlace-black" to="/register"> Crear cuenta </router-link></p>
             <b-button class="secondary-button">Iniciar sesión</b-button>
         </div>
 
@@ -154,7 +153,6 @@ export default {
 
   #home-page {
     background: url('../assets/landing_bg.jpg') no-repeat center center;
-    // filter : brightness(50%);
     -webkit-background-size: cover;
     -moz-background-size: cover;
     -o-background-size: cover;
