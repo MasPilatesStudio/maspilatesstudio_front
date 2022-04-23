@@ -13,23 +13,38 @@
                 <b-form-input
                   v-model="user.email"
                   type="email"
-                  placeholder="Email" />
+                  placeholder="Email"
+                  :state="emailState"
+                  @change="emailState = null" />
                 <b-form-input
                   v-model="user.name"
                   class="mt-2"
                   type="text"
-                  placeholder="Nombre" />
+                  placeholder="Nombre"
+                  :state="nameState"
+                  @change="nameState = null" />
                 <b-form-input
                   v-model="user.password"
                   class="mt-2"
                   type="password"
-                  placeholder="Contraseña" />
+                  placeholder="Contraseña"
+                  :state="passwordState"
+                  @change="passwordState = null" />
                 <b-form-input
-                  v-model="user.password"
+                  v-model="user.passwordCheck"
                   class="mt-2"
                   type="password"
-                  placeholder="Confirmar contraseña" />
-                <b-button :disabled="loading" @click="loading = true" class="mt-2 primary-button">
+                  placeholder="Confirmar contraseña"
+                  :state="passwordCheckState"
+                  @change="passwordCheckState = null" />
+                 <b-alert
+                    class="m-2"
+                    variant="danger"
+                    fade
+                    :show="showError">
+                    {{ error }}
+                 </b-alert>
+                <b-button :disabled="loading" @click="checkValues()" class="mt-2 primary-button">
                   Registrarme
                 </b-button>
               </b-col>
@@ -42,32 +57,69 @@
 </template>
 
 <script>
-import dataServices from '@/services/dataServices.js'
+import userServices from '@/services/userServices.js'
 
 export default {
   name: 'RegisterUser',
-  components: {
-
-  },
   data () {
     return {
-      mensaje: 'Sin mensaje!',
       user: {
         email: '',
         name: '',
-        password: ''
+        password: '',
+        passwordCheck: ''
       },
-      loading: false
+      emailState: null,
+      nameState: null,
+      passwordState: null,
+      passwordCheckState: null,
+      loading: false,
+      error: '',
+      showError: false
     }
   },
   created () {
-    this.getMensaje()
   },
   methods: {
-    getMensaje () {
-      dataServices.getMessage()
+    checkValues () {
+      this.showError = false
+      if (this.user.email == null || this.user.email === '' ||
+          this.user.name == null || this.user.name === '' ||
+          this.user.password == null || this.user.password === '' ||
+          this.user.passwordCheck == null || this.user.passwordCheck === '' ||
+          this.user.password !== this.user.passwordCheck) {
+        if (this.user.email == null || this.user.email === '') {
+          this.emailState = false
+        }
+        if (this.user.name == null || this.user.name === '') {
+          this.nameState = false
+        }
+        if (this.user.password == null || this.user.password === '') {
+          this.passwordState = false
+        }
+        if (this.user.passwordCheck == null || this.user.passwordCheck === '') {
+          this.passwordCheckState = false
+        }
+        if (this.user.passwordCheck !== this.user.password) {
+          this.passwordCheckState = false
+          this.passwordState = false
+          this.error = 'Las contraseñas no coinciden'
+          this.showError = true
+        } else {
+          this.error = 'Todos los campos son obligatorios'
+          this.showError = true
+        }
+      } else {
+        this.register()
+      }
+    },
+
+    register () {
+      userServices.register(this.user)
         .then(response => {
-          this.mensaje = response.message
+          if (response.message !== 'OK') {
+            this.error = response.message
+          }
         })
         .catch((error) => {
           console.error(error)
@@ -80,7 +132,6 @@ export default {
 }
 </script>
 <style scoped>
-
   .registro {
     max-width: 50em;
   }

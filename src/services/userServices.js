@@ -2,10 +2,13 @@ import { services } from '@/services/services'
 import { apiHostBaseUrl } from '@/apiHost/apiHost'
 
 const dataServices = {
-  addUser () {
+  register (user) {
     return new Promise((resolve, reject) => {
       services.post({
-        path: apiHostBaseUrl + 'users/add_user'
+        url: apiHostBaseUrl + 'users/register',
+        data: {
+          user: user
+        }
       })
         .then(response => {
           resolve(response.data)

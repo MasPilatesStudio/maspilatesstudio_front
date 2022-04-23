@@ -10,8 +10,8 @@
     <b-collapse id="nav-collapse" is-nav class="justify-content-end">
       <!-- Right aligned nav items -->
       <b-navbar-nav class="ml-auto">
-        <b-nav-item href="#">INICIO</b-nav-item>
-        <b-nav-item href="#">TIENDA</b-nav-item>
+        <b-nav-item to="/">INICIO</b-nav-item>
+        <b-nav-item to="/shop">TIENDA</b-nav-item>
         <b-nav-item-dropdown right>
           <!-- Using 'button-content' slot -->
           <template #button-content>
