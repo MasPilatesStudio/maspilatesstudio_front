@@ -60,38 +60,32 @@
       </div>
     </div>
 
-    <div id="contact" class="p-4">
+    <div id="contact" v-if="user_logued = undefined" class="p-4">
       <div class="row justify-content-center mt-3 mb-3">
-
-        <div v-if="show_contact == true" class="col-lg-4">
+        <div class="col-lg-4">
           <h2>Iniciar sesión</h2>
-
-          <div v-if="contact_notice != ''" class="alert alert-warning">
-            There was a problem submitting your message. {{contact_notice}}
-          </div>
           <b-form>
             <b-form-input
+              v-model="user.email"
               type="email"
+              @change="check()"
               class="mb-2 mr-sm-2 mb-sm-2"
               placeholder="Enter Your Email">
             </b-form-input>
 
             <b-form-input
+              v-model="user.password"
               type="password"
+              @change="check()"
               class="mb-2 mr-sm-2 mb-sm-0"
               placeholder="Enter Your Password">
             </b-form-input>
           </b-form>
-            <p class="pt-2">¿Aún no estás registrado? <router-link class="enlace-black" to="/register"> Crear cuenta </router-link></p>
-            <b-button class="secondary-button">Iniciar sesión</b-button>
-        </div>
-
-        <div v-else>
-          <h3>Message Sent Successfully!</h3>
-          <p>Thank you for contacting us, we'll get back to you as soon as we can.</p>
+            <p v-if="show_error">{{ error }}</p>
+            <p class="pt-2">¿Aún no estás registrado? <router-link class="link-black" to="/register"> Crear cuenta </router-link></p>
+            <b-button class="secondary-button" @click="login()" >Iniciar sesión</b-button>
         </div>
       </div>
-
     </div>
 
     <div id="footer" class=" p-4">
@@ -108,18 +102,20 @@
 </template>
 
 <script>
+import userServices from '@/services/userServices.js'
+// import { mapGetters } from '@/store'
 
 export default {
   name: 'LandingPage',
   data () {
     return {
       title: 'Más Pilates Studio',
-      email: '',
-      message: '',
-      show_contact: true,
-      contact_email: '',
-      contact_message: '',
-      contact_notice: '',
+      user: {
+        email: '',
+        password: ''
+      },
+      error: '',
+      show_error: false,
       fields: [
         { key: 'id', stickyColumn: true, isRowHeader: true, variant: 'primary' },
         'Lunes',
@@ -127,9 +123,6 @@ export default {
         'Miércoles',
         'Jueves',
         'Viernes'
-        // { key: 'c', stickyColumn: true, variant: 'info' },
-        // 'k',
-        // 'l'
       ],
       items: [
         { id: '8:00 - 8:50', Lunes: 'PILATES', Martes: '-', Miércoles: 'PILATES', Jueves: '-', Viernes: '-' },
@@ -142,6 +135,45 @@ export default {
         { id: '19:30 - 20:20', Lunes: 'PILATES', Martes: 'PILATES', Miércoles: 'PILATES', Jueves: 'PILATES', Viernes: '-' },
         { id: '20:30 - 21:20', Lunes: 'PILATES', Martes: '-', Miércoles: 'PILATES', Jueves: '-', Viernes: '-' }
       ]
+    }
+  },
+  created () {
+  },
+  computed: {
+    // ...mapGetters(['user_logued'])
+  },
+  // watch: {
+  //   getUser: {
+  //     handler (getUser) {
+  //       console.log('profile: ', getUser)
+  //     },
+  //     deep: true
+  //   }
+  // },
+  methods: {
+    check () {
+      if (this.user.email !== '' && this.user.email !== undefined &&
+      this.user.password !== '' && this.user.password !== undefined) {
+        console.log('landign')
+      }
+    },
+    login () {
+      userServices.login(this.user)
+        .then(response => {
+          if (response.response === 'Incorrect password' || response.response === 'Invalid credentials') {
+            this.showError = true
+            this.error = response.response
+          } else {
+            this.$store.commit('set_user', response.response)
+            this.show_login = false
+          }
+        })
+        .catch((error) => {
+          console.error(error)
+        })
+        .finally(() => {
+          this.loading = false
+        })
     }
   }
 }

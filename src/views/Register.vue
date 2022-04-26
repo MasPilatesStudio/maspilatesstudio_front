@@ -41,6 +41,7 @@
                     class="m-2"
                     variant="danger"
                     fade
+                    dismissible
                     :show="showError">
                     {{ error }}
                  </b-alert>
@@ -118,7 +119,11 @@ export default {
       userServices.register(this.user)
         .then(response => {
           if (response.message !== 'OK') {
+            this.showError = true
             this.error = response.message
+          } else {
+            // Redirect to inicio
+            this.$router.push('/')
           }
         })
         .catch((error) => {

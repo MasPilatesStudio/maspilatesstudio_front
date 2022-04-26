@@ -12,13 +12,14 @@
       <b-navbar-nav class="ml-auto">
         <b-nav-item to="/">INICIO</b-nav-item>
         <b-nav-item to="/shop">TIENDA</b-nav-item>
+        <b-nav-item to="/calendar">CALENDARIO</b-nav-item>
         <b-nav-item-dropdown right>
           <!-- Using 'button-content' slot -->
           <template #button-content>
             USUARIO
           </template>
           <b-dropdown-item href="#">PERFIL</b-dropdown-item>
-          <b-dropdown-item href="#">CERRAR SESIÓN</b-dropdown-item>
+          <b-dropdown-item @click="logout()">CERRAR SESIÓN</b-dropdown-item>
         </b-nav-item-dropdown>
       </b-navbar-nav>
     </b-collapse>
@@ -39,6 +40,10 @@ export default {
   methods: {
     click () {
       this.nav.classList.toggle('open')
+    },
+    logout () {
+      this.$store.commit('del_user')
+      this.$router.push('/')
     }
   }
 }
