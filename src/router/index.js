@@ -1,6 +1,5 @@
 import Vue from 'vue'
 import VueRouter from 'vue-router'
-// import HomeView from '../views/HomeView.vue'
 
 Vue.use(VueRouter)
 
@@ -19,6 +18,17 @@ const routes = [
     components: {
       header: () => import('@/views/Header.vue'),
       default: () => import('@/views/Register')
+    }
+  },
+  {
+    path: '/calendar',
+    name: 'calendar',
+    components: {
+      header: () => import('@/views/Header.vue'),
+      default: () => import('@/views/Calendar')
+    },
+    meta: {
+      requireAuth: true
     }
   }
 ]

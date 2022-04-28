@@ -60,10 +60,10 @@
       </div>
     </div>
 
-    <div id="contact" v-if="user_logued = undefined" class="p-4">
+    <div id="contact" v-if="true" class="p-4">
       <div class="row justify-content-center mt-3 mb-3">
         <div class="col-lg-4">
-          <h2>Iniciar sesión</h2>
+          <h2>Iniciar sesión {{ user_logued.rol }}</h2>
           <b-form>
             <b-form-input
               v-model="user.email"
@@ -103,7 +103,7 @@
 
 <script>
 import userServices from '@/services/userServices.js'
-// import { mapGetters } from '@/store'
+import { mapGetters } from 'vuex'
 
 export default {
   name: 'LandingPage',
@@ -140,7 +140,7 @@ export default {
   created () {
   },
   computed: {
-    // ...mapGetters(['user_logued'])
+    ...mapGetters({ user_logued: 'user_logued' })
   },
   // watch: {
   //   getUser: {

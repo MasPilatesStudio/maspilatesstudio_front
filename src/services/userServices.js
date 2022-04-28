@@ -36,6 +36,19 @@ const dataServices = {
           reject(e)
         })
     })
+  },
+  logout () {
+    return new Promise((resolve, reject) => {
+      services.get({
+        url: apiHostBaseUrl + prefix + '/logout'
+      })
+        .then(response => {
+          resolve(response.data)
+        })
+        .catch(e => {
+          reject(e)
+        })
+    })
   }
 }
 

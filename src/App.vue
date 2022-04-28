@@ -12,6 +12,8 @@
   </div>
 </template>
 <script>
+import store from './store'
+
 export default {
   data () {
     return {
@@ -22,6 +24,7 @@ export default {
 
   },
   created () {
+    if (localStorage.user) store.commit('set_user', JSON.parse(localStorage.user))
   },
   methods: {
 

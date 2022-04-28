@@ -19,7 +19,7 @@
             USUARIO
           </template>
           <b-dropdown-item href="#">PERFIL</b-dropdown-item>
-          <b-dropdown-item @click="logout()">CERRAR SESIÓN</b-dropdown-item>
+          <b-dropdown-item-button>CERRAR SESIÓN</b-dropdown-item-button>
         </b-nav-item-dropdown>
       </b-navbar-nav>
     </b-collapse>
@@ -27,23 +27,37 @@
 </div>
 </template>
 <script>
+import userServices from '@/services/userServices.js'
+
 export default {
   name: 'HomeMessage',
   data () {
     return {
-      nav: null
+      // nav: null
     }
   },
   created () {
-    this.nav = document.querySelector('.nav-link')
+    // this.nav = document.querySelector('.nav-link')
+    this.cerrar = document.querySelector('#cerrar')
   },
   methods: {
-    click () {
-      this.nav.classList.toggle('open')
-    },
+    // click () {
+    //   this.nav.classList.toggle('open')
+    // },
     logout () {
-      this.$store.commit('del_user')
-      this.$router.push('/')
+      userServices.logout()
+        .then(response => {
+          if (response.response === 'OK') {
+            this.$store.commit('del_user')
+            this.$router.push('/')
+          }
+        })
+        .catch((error) => {
+          console.error(error)
+        })
+        .finally(() => {
+          this.loading = false
+        })
     }
   }
 }
