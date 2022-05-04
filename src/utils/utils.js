@@ -12,6 +12,11 @@ const utils = {
     return formattedDate
   },
 
+  getDatestrHours (date) {
+    const formattedDate = date.getHours() + ':' + ('0' + date.getMinutes()).slice(-2)
+    return formattedDate
+  },
+
   strToDate (dtStr) {
     if (!dtStr) return null
     const dateParts = dtStr.split('-')

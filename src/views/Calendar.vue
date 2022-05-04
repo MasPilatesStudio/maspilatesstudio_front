@@ -1,9 +1,9 @@
 <template>
-  <div class="container-fluid content">
+  <div class="container-fluid content p-0">
     <div v-if="loading">
       <b-spinner style="width: 3rem; height: 3rem;" variant="info"></b-spinner>
     </div>
-    <div v-else>
+    <div class="pr-3 pl-3" v-else>
       <h3>Calendario</h3>
       <b-col class="d-flex col-12 mb-2 justify-content-between">
         <div class="d-flex align-items-center">
@@ -44,15 +44,42 @@
         @change="assignEvents">
       </v-calendar>
     </div>
+    <b-modal ref="modal-scoped"
+      centered>
+      <template #modal-header="{ }">
+        <!-- Emulate built in modal header close button action -->
+        <h5>{{ selectedEvent.name }}</h5>
+      </template>
+
+      <template #default="{  }">
+        <p><b>Hora: </b>{{ hour }}</p>
+        <p><b>Profesora: </b>{{ selectedEvent.teacher }}</p>
+      </template>
+
+      <template #modal-footer="{ ok, cancel }">
+        <b-button size="sm" variant="info" @click="ok()">
+          RESERVAR
+        </b-button>
+        <b-button size="sm" variant="outline-danger" @click="cancel()">
+          CANCELAR
+        </b-button>
+      </template>
+    </b-modal>
+    <Footer />
   </div>
 </template>
 
 <script>
 import calendarServices from '@/services/calendarServices.js'
+import constants from '@/utils/constants.js'
 import utils from '@/utils/utils.js'
+import Footer from './Footer.vue'
 
 export default {
   name: 'CalendarPage',
+  components: {
+    Footer
+  },
   data: () => ({
     loading: true,
     mode: 'stack',
@@ -72,7 +99,11 @@ export default {
     events: [],
     colors: ['#42a5f5', '#4caf50', '#673ab7', '#0097a7', '#2e7d32', '#fb8c00', '#f4511e'],
     names: ['PILATES', 'PILATES TERAPÉUTICO', 'CORE', 'ENTRENAMIENTO FUNCIONAL'],
-    schedule: []
+    schedule: [],
+    modal: {
+      event: false
+    },
+    hour: ''
   }),
   mounted () {
     this.get_schedule()
@@ -96,42 +127,39 @@ export default {
     next () {
       this.$refs.calendar.next()
     },
-    showEvent ({ nativeEvent, event }) {
-      const open = () => {
-        this.selectedEvent = event
-        this.selectedElement = nativeEvent.target
-        // requestAnimationFrame(() => requestAnimationFrame(() => this.selectedOpen = true))
-      }
-      if (this.selectedOpen) {
-        this.selectedOpen = false
-        requestAnimationFrame(() => requestAnimationFrame(() => open()))
-      } else {
-        open()
-      }
-      nativeEvent.stopPropagation()
+    getHour () {
+      this.hour = constants.weekdays[this.selectedEvent.day] + ' ' + this.selectedEvent.start.getDay() + ', ' + utils.getDatestrHours(this.selectedEvent.start) + ' - ' +
+        utils.getDatestrHours(this.selectedEvent.end)
     },
-    updateRange ({ start, end }) {
-      const events = []
-      const min = new Date(`${start.date}T00:00:00`)
-      const max = new Date(`${end.date}T23:59:59`)
-      const days = (max.getTime() - min.getTime()) / 864000000
-      const eventCount = this.rnd(days, days + 20)
-      for (let i = 0; i < eventCount; i++) {
-        const allDay = this.rnd(0, 3) === 0
-        const firstTimestamp = this.rnd(min.getTime(), max.getTime())
-        const first = new Date(firstTimestamp - (firstTimestamp % 900000))
-        const secondTimestamp = this.rnd(2, allDay ? 288 : 8) * 900000
-        const second = new Date(first.getTime() + secondTimestamp)
-        events.push({
-          name: this.names[this.rnd(0, this.names.length - 1)],
-          start: first,
-          end: second,
-          color: this.colors[this.rnd(0, this.colors.length - 1)],
-          timed: !allDay
-        })
-      }
-      this.events = events
+    showEvent ({ event }) {
+      this.selectedEvent = event
+      console.log(this.selectedEvent)
+      this.modal.event = true
+      this.getHour()
+      this.$refs['modal-scoped'].show()
     },
+    // updateRange ({ start, end }) {
+    //   const events = []
+    //   const min = new Date(`${start.date}T00:00:00`)
+    //   const max = new Date(`${end.date}T23:59:59`)
+    //   const days = (max.getTime() - min.getTime()) / 864000000
+    //   const eventCount = this.rnd(days, days + 20)
+    //   for (let i = 0; i < eventCount; i++) {
+    //     const allDay = this.rnd(0, 3) === 0
+    //     const firstTimestamp = this.rnd(min.getTime(), max.getTime())
+    //     const first = new Date(firstTimestamp - (firstTimestamp % 900000))
+    //     const secondTimestamp = this.rnd(2, allDay ? 288 : 8) * 900000
+    //     const second = new Date(first.getTime() + secondTimestamp)
+    //     events.push({
+    //       name: this.names[this.rnd(0, this.names.length - 1)],
+    //       start: first,
+    //       end: second,
+    //       color: this.colors[this.rnd(0, this.colors.length - 1)],
+    //       timed: !allDay
+    //     })
+    //   }
+    //   this.events = events
+    // },
     rnd (a, b) {
       return Math.floor((b - a + 1) * Math.random()) + a
     },
@@ -167,7 +195,9 @@ export default {
               start: utils.strToDate(utils.getDatestr(fecInicio) + ' ' + element.start_hour + ':00'),
               end: utils.strToDate(utils.getDatestr(fecInicio) + ' ' + element.end_hour + ':00'),
               color: this.colors[this.rnd(0, this.colors.length - 1)],
-              timed: true
+              timed: true,
+              day: element.weekday,
+              teacher: element.teacher
             }
             events.push(obj)
           })
@@ -179,7 +209,9 @@ export default {
               start: utils.strToDate(utils.getDatestr(fecInicio) + ' ' + element.start_hour + ':00'),
               end: utils.strToDate(utils.getDatestr(fecInicio) + ' ' + element.end_hour + ':00'),
               color: this.colors[this.rnd(0, this.colors.length - 1)],
-              timed: true
+              timed: true,
+              day: element.weekday,
+              teacher: element.teacher
             }
             events.push(obj)
           })
@@ -191,7 +223,9 @@ export default {
               start: utils.strToDate(utils.getDatestr(fecInicio) + ' ' + element.start_hour + ':00'),
               end: utils.strToDate(utils.getDatestr(fecInicio) + ' ' + element.end_hour + ':00'),
               color: this.colors[this.rnd(0, this.colors.length - 1)],
-              timed: true
+              timed: true,
+              day: element.weekday,
+              teacher: element.teacher
             }
             events.push(obj)
           })
@@ -203,7 +237,9 @@ export default {
               start: utils.strToDate(utils.getDatestr(fecInicio) + ' ' + element.start_hour + ':00'),
               end: utils.strToDate(utils.getDatestr(fecInicio) + ' ' + element.end_hour + ':00'),
               color: this.colors[this.rnd(0, this.colors.length - 1)],
-              timed: true
+              timed: true,
+              day: element.weekday,
+              teacher: element.teacher
             }
             events.push(obj)
           })
@@ -215,7 +251,9 @@ export default {
               start: utils.strToDate(utils.getDatestr(fecInicio) + ' ' + element.start_hour + ':00'),
               end: utils.strToDate(utils.getDatestr(fecInicio) + ' ' + element.end_hour + ':00'),
               color: this.colors[this.rnd(0, this.colors.length - 1)],
-              timed: true
+              timed: true,
+              day: element.weekday,
+              teacher: element.teacher
             }
             events.push(obj)
           })
