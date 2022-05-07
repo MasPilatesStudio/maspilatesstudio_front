@@ -56,8 +56,8 @@
         <p><b>Profesora: </b>{{ selectedEvent.teacher }}</p>
       </template>
 
-      <template #modal-footer="{ ok, cancel }">
-        <b-button size="sm" variant="info" @click="ok()">
+      <template #modal-footer="{ cancel }">
+        <b-button size="sm" variant="info" @click="book_class()">
           RESERVAR
         </b-button>
         <b-button size="sm" variant="outline-danger" @click="cancel()">
@@ -178,7 +178,20 @@ export default {
         .finally(() => {
         })
     },
-
+    book_class () {
+      calendarServices.book_class(this.selectedEvent)
+        .then(response => {
+          if (response.response === 'OK') {
+            this.loading = false
+          }
+        })
+        .catch((error) => {
+          console.error(error)
+          this.loading = false
+        })
+        .finally(() => {
+        })
+    },
     assignEvents ({ start, end }) {
       this.$refs.calendar.checkChange()
       const events = []

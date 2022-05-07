@@ -16,6 +16,24 @@ const dataServices = {
           reject(e)
         })
     })
+  },
+
+  book_class (book) {
+    console.log(book)
+    return new Promise((resolve, reject) => {
+      services.post({
+        url: apiHostBaseUrl + prefix + '/book_class',
+        data: {
+          book: book
+        }
+      })
+        .then(response => {
+          resolve(response.data)
+        })
+        .catch(e => {
+          reject(e)
+        })
+    })
   }
 }
 export default dataServices

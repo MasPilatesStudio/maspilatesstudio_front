@@ -60,7 +60,7 @@
       </div>
     </div>
 
-    <div id="contact" v-if="!user_logued.token" class="p-4">
+    <div id="contact" v-show="!user_logued" class="p-4">
       <div class="row justify-content-center mt-3 mb-3">
         <div class="col-lg-4">
           <h2>Iniciar sesión</h2>
@@ -135,22 +135,16 @@ export default {
   computed: {
     ...mapGetters({ user_logued: 'user_logued' })
   },
-  // watch: {
-  //   getUser: {
-  //     handler (getUser) {
-  //       console.log('profile: ', getUser)
-  //     },
-  //     deep: true
-  //   }
-  // },
   methods: {
     check () {
       if (this.user.email !== '' && this.user.email !== undefined &&
       this.user.password !== '' && this.user.password !== undefined) {
-        console.log('landign')
-      }
+        this.error = 'Todos los campos son obligatorios'
+        return false
+      } else return true
     },
     login () {
+      this.loading = true
       userServices.login(this.user)
         .then(response => {
           if (response.response === 'Incorrect password' || response.response === 'Invalid credentials') {
@@ -159,6 +153,7 @@ export default {
           } else {
             this.$store.commit('set_user', response.response)
             this.show_login = false
+            this.$router.go(0)
           }
         })
         .catch((error) => {
