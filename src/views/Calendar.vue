@@ -74,6 +74,7 @@ import calendarServices from '@/services/calendarServices.js'
 import constants from '@/utils/constants.js'
 import utils from '@/utils/utils.js'
 import Footer from './Footer.vue'
+import { mapGetters } from 'vuex'
 
 export default {
   name: 'CalendarPage',
@@ -110,6 +111,9 @@ export default {
   },
   created () {
   },
+  computed: {
+    ...mapGetters({ user_logued: 'user_logued' })
+  },
   methods: {
     viewDay ({ date }) {
       this.focus = date
@@ -133,7 +137,6 @@ export default {
     },
     showEvent ({ event }) {
       this.selectedEvent = event
-      console.log(this.selectedEvent)
       this.modal.event = true
       this.getHour()
       this.$refs['modal-scoped'].show()
@@ -179,10 +182,17 @@ export default {
         })
     },
     book_class () {
-      calendarServices.book_class(this.selectedEvent)
+      this.loading = true
+      const aux = {
+        name: this.selectedEvent.name,
+        start: utils.getDatestr(this.selectedEvent.start) + ' ' + utils.getDatestrHours(this.selectedEvent.start) + ':00',
+        end: utils.getDatestr(this.selectedEvent.end) + ' ' + utils.getDatestrHours(this.selectedEvent.end) + ':00'
+      }
+
+      calendarServices.book_class(aux, this.user_logued.email)
         .then(response => {
           if (response.response === 'OK') {
-            this.loading = false
+            this.$refs['modal-scoped'].hide()
           }
         })
         .catch((error) => {
@@ -190,6 +200,7 @@ export default {
           this.loading = false
         })
         .finally(() => {
+          this.loading = false
         })
     },
     assignEvents ({ start, end }) {

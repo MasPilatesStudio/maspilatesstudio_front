@@ -18,13 +18,13 @@ const dataServices = {
     })
   },
 
-  book_class (book) {
-    console.log(book)
+  book_class (book, email) {
     return new Promise((resolve, reject) => {
       services.post({
         url: apiHostBaseUrl + prefix + '/book_class',
         data: {
-          book: book
+          book: book,
+          email: email
         }
       })
         .then(response => {

@@ -8,12 +8,12 @@ const utils = {
   },
 
   getDatestr (date) {
-    const formattedDate = date.getDate() + '-' + (date.getMonth() + 1) + '-' + date.getFullYear()
+    const formattedDate = ('0' + date.getDate()).slice(-2) + '-' + ('0' + (date.getMonth() + 1)).slice(-2) + '-' + date.getFullYear()
     return formattedDate
   },
 
   getDatestrHours (date) {
-    const formattedDate = date.getHours() + ':' + ('0' + date.getMinutes()).slice(-2)
+    const formattedDate = ('0' + date.getHours()).slice(-2) + ':' + ('0' + date.getMinutes()).slice(-2)
     return formattedDate
   },
 
