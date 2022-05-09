@@ -17,6 +17,10 @@ const utils = {
     return formattedDate
   },
 
+  getDateStrBooks (date) {
+    return this.getDatestr(date) + ' ' + this.getDatestrHours(date) + ':00'
+  },
+
   strToDate (dtStr) {
     if (!dtStr) return null
     const dateParts = dtStr.split('-')

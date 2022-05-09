@@ -34,6 +34,20 @@ const dataServices = {
           reject(e)
         })
     })
+  },
+
+  get_books (email) {
+    return new Promise((resolve, reject) => {
+      services.get({
+        path: apiHostBaseUrl + prefix + '/get_bookings/' + email
+      })
+        .then(response => {
+          resolve(response.data)
+        })
+        .catch(e => {
+          reject(e)
+        })
+    })
   }
 }
 export default dataServices

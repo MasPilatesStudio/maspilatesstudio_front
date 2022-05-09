@@ -83,6 +83,8 @@ export default {
   },
   data: () => ({
     loading: true,
+    loadingSchedule: true,
+    loadingBooks: true,
     mode: 'stack',
     selected: 'week',
     focus: '',
@@ -98,9 +100,15 @@ export default {
     selectedElement: null,
     selectedOpen: false,
     events: [],
-    colors: ['#42a5f5', '#4caf50', '#673ab7', '#0097a7', '#2e7d32', '#fb8c00', '#f4511e'],
+    color: {
+      PILATES: '#00acc1',
+      CORE: '#7986cb',
+      'ENT. FUNCIONAL': '#90d142',
+      'P. TERAPÉUTICO': '#f56564'
+    },
     names: ['PILATES', 'PILATES TERAPÉUTICO', 'CORE', 'ENTRENAMIENTO FUNCIONAL'],
     schedule: [],
+    books: [],
     modal: {
       event: false
     },
@@ -108,6 +116,7 @@ export default {
   }),
   mounted () {
     this.get_schedule()
+    this.get_books()
   },
   created () {
   },
@@ -132,7 +141,8 @@ export default {
       this.$refs.calendar.next()
     },
     getHour () {
-      this.hour = constants.weekdays[this.selectedEvent.day] + ' ' + this.selectedEvent.start.getDay() + ', ' + utils.getDatestrHours(this.selectedEvent.start) + ' - ' +
+      this.hour = constants.weekdays[this.selectedEvent.day] + ' ' +
+        this.selectedEvent.start.getDay() + ', ' + utils.getDatestrHours(this.selectedEvent.start) + ' - ' +
         utils.getDatestrHours(this.selectedEvent.end)
     },
     showEvent ({ event }) {
@@ -166,20 +176,40 @@ export default {
     rnd (a, b) {
       return Math.floor((b - a + 1) * Math.random()) + a
     },
+    get_books () {
+      calendarServices.get_books(this.user_logued.email)
+        .then(response => {
+          if (response.Items.length > 0) {
+            this.books = response.Items
+            this.loadingBooks = false
+          }
+        })
+        .catch((error) => {
+          console.error(error)
+        })
+        .finally(() => {
+          this.checkLoading()
+        })
+    },
     get_schedule () {
       calendarServices.get_schedule()
         .then(response => {
           if (response.Items.length > 0) {
             this.schedule = response.Items
-            this.loading = false
+            this.loadingSchedule = false
           }
         })
         .catch((error) => {
           console.error(error)
-          this.loading = false
         })
         .finally(() => {
+          this.checkLoading()
         })
+    },
+    checkLoading () {
+      if (!this.loadingSchedule && !this.loadingBooks) {
+        this.loading = false
+      }
     },
     book_class () {
       this.loading = true
@@ -193,6 +223,7 @@ export default {
         .then(response => {
           if (response.response === 'OK') {
             this.$refs['modal-scoped'].hide()
+            this.$router.go(0)
           }
         })
         .catch((error) => {
@@ -202,6 +233,17 @@ export default {
         .finally(() => {
           this.loading = false
         })
+    },
+    checkIsBooked () {
+      this.events.forEach(element => {
+        this.books.forEach(item => {
+          const aux = new Date(item.start_date)
+          aux.setHours(aux.getHours() - 2)
+          if (utils.getDateStrBooks(new Date(element.start)) === utils.getDateStrBooks(aux)) {
+            element.name += ' - RESERVADO'
+          }
+        })
+      })
     },
     assignEvents ({ start, end }) {
       this.$refs.calendar.checkChange()
@@ -218,7 +260,7 @@ export default {
               name: element.name,
               start: utils.strToDate(utils.getDatestr(fecInicio) + ' ' + element.start_hour + ':00'),
               end: utils.strToDate(utils.getDatestr(fecInicio) + ' ' + element.end_hour + ':00'),
-              color: this.colors[this.rnd(0, this.colors.length - 1)],
+              color: this.color[element.name],
               timed: true,
               day: element.weekday,
               teacher: element.teacher
@@ -232,7 +274,7 @@ export default {
               name: element.name,
               start: utils.strToDate(utils.getDatestr(fecInicio) + ' ' + element.start_hour + ':00'),
               end: utils.strToDate(utils.getDatestr(fecInicio) + ' ' + element.end_hour + ':00'),
-              color: this.colors[this.rnd(0, this.colors.length - 1)],
+              color: this.color[element.name],
               timed: true,
               day: element.weekday,
               teacher: element.teacher
@@ -246,7 +288,7 @@ export default {
               name: element.name,
               start: utils.strToDate(utils.getDatestr(fecInicio) + ' ' + element.start_hour + ':00'),
               end: utils.strToDate(utils.getDatestr(fecInicio) + ' ' + element.end_hour + ':00'),
-              color: this.colors[this.rnd(0, this.colors.length - 1)],
+              color: this.color[element.name],
               timed: true,
               day: element.weekday,
               teacher: element.teacher
@@ -260,7 +302,7 @@ export default {
               name: element.name,
               start: utils.strToDate(utils.getDatestr(fecInicio) + ' ' + element.start_hour + ':00'),
               end: utils.strToDate(utils.getDatestr(fecInicio) + ' ' + element.end_hour + ':00'),
-              color: this.colors[this.rnd(0, this.colors.length - 1)],
+              color: this.color[element.name],
               timed: true,
               day: element.weekday,
               teacher: element.teacher
@@ -274,7 +316,7 @@ export default {
               name: element.name,
               start: utils.strToDate(utils.getDatestr(fecInicio) + ' ' + element.start_hour + ':00'),
               end: utils.strToDate(utils.getDatestr(fecInicio) + ' ' + element.end_hour + ':00'),
-              color: this.colors[this.rnd(0, this.colors.length - 1)],
+              color: this.color[element.name],
               timed: true,
               day: element.weekday,
               teacher: element.teacher
@@ -285,6 +327,7 @@ export default {
         aux.setDate(aux.getDate() + 1)
       }
       this.events = events
+      this.checkIsBooked()
     }
   }
 }

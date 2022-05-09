@@ -118,7 +118,7 @@ export default {
         'Viernes'
       ],
       items: [
-        { id: '8:00 - 8:50', Lunes: 'PILATES', Martes: '-', Miércoles: 'PILATES', Jueves: '-', Viernes: '-' },
+        { id: '8:00 - 8:50', Lunes: 'CORE', Martes: '-', Miércoles: 'CORE', Jueves: '-', Viernes: '-' },
         { id: '9:10 - 10:00', Lunes: 'PILATES', Martes: '-', Miércoles: 'PILATES', Jueves: '-', Viernes: 'ENTRENAMIENTO FUNCIONAL' },
         { id: '', Lunes: '', Martes: '', Miércoles: '', Jueves: '', Viernes: '' },
         { id: '15:30 - 16:20', Lunes: 'PILATES', Martes: 'PILATES', Miércoles: 'PILATES', Jueves: 'PILATES', Viernes: '-' },
