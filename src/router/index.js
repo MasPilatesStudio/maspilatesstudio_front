@@ -30,6 +30,17 @@ const routes = [
     meta: {
       requireAuth: true
     }
+  },
+  {
+    path: '/shop',
+    name: 'shop',
+    components: {
+      header: () => import('@/views/Header.vue'),
+      default: () => import('@/views/Shop')
+    },
+    meta: {
+      requireAuth: true
+    }
   }
 ]
 

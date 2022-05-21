@@ -36,8 +36,8 @@ export default {
 @import 'src/assets/varibles';
 
 #app {
-  font-family: 'Quicksand', sans-serif, sans-serif, Avenir, Helvetica;
-  font-weight: 400;
+  font-family:  'Oswald', 'Quicksand', sans-serif, sans-serif, Avenir, Helvetica;
+  font-weight: 300;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   text-align: center;

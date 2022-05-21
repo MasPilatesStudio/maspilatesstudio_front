@@ -48,6 +48,20 @@ const dataServices = {
           reject(e)
         })
     })
+  },
+
+  get_people_per_class () {
+    return new Promise((resolve, reject) => {
+      services.get({
+        path: apiHostBaseUrl + prefix + '/get_people_per_class'
+      })
+        .then(response => {
+          resolve(response.data)
+        })
+        .catch(e => {
+          reject(e)
+        })
+    })
   }
 }
 export default dataServices
