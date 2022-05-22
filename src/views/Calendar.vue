@@ -55,6 +55,16 @@
         <p><b>Hora: </b>{{ hour }}</p>
         <p><b>Profesora: </b>{{ selectedEvent.teacher }}</p>
         <p>{{ selectedEvent.people }}/20 participantes</p>
+        <span
+          class="col-12"
+          v-if="user_logued.rol == 'Administrator'">
+          <p class="font-weight-bold">Lista de reservas</p>
+          <div class="d-flex flex-wrap col-12">
+            <p class="pl-2 col-4" v-for="user in selectedEvent.users" :key="user">
+              {{ user }}
+            </p>
+          </div>
+        </span>
       </template>
 
       <template #modal-footer="{ cancel }">
@@ -87,6 +97,7 @@ export default {
     loadingSchedule: true,
     loadingBooks: true,
     loadingPeople: true,
+    loadingPeopleBooked: true,
     mode: 'stack',
     selected: 'week',
     focus: '',
@@ -103,6 +114,7 @@ export default {
     selectedOpen: false,
     events: [],
     people_per_class: [],
+    people_booked: [],
     color: {
       PILATES: '#00acc1',
       CORE: '#7986cb',
@@ -121,6 +133,7 @@ export default {
     this.get_schedule()
     this.get_books()
     this.get_people_per_class()
+    this.get_people_booked()
   },
   created () {
   },
@@ -188,6 +201,21 @@ export default {
           this.checkLoading()
         })
     },
+    get_people_booked () {
+      calendarServices.get_people_booked()
+        .then(response => {
+          if (response.Items.length > 0) {
+            this.people_booked = response.Items
+            this.loadingPeopleBooked = false
+          }
+        })
+        .catch((error) => {
+          console.error(error)
+        })
+        .finally(() => {
+          this.checkLoading()
+        })
+    },
     get_schedule () {
       calendarServices.get_schedule()
         .then(response => {
@@ -204,7 +232,7 @@ export default {
         })
     },
     checkLoading () {
-      if (!this.loadingSchedule && !this.loadingBooks && !this.loadingPeople) {
+      if (!this.loadingSchedule && !this.loadingBooks && !this.loadingPeople && !this.loadingPeopleBooked) {
         this.loading = false
       }
     },
@@ -248,6 +276,13 @@ export default {
           this.people_per_class.forEach(row => {
             if (utils.getDateStrBooks(new Date(element.start)) === row.start_date) {
               element.people = row.count
+            }
+          })
+          const auxUsers = []
+          this.people_booked.forEach(aux => {
+            if (utils.getDateStrBooks(new Date(element.start)) === aux.start_date) {
+              auxUsers.push(aux.user_email)
+              element.users = auxUsers
             }
           })
         })
