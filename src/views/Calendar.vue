@@ -3,7 +3,7 @@
     <div v-if="loading">
       <b-spinner style="width: 3rem; height: 3rem;" variant="info"></b-spinner>
     </div>
-    <div class="pr-3 pl-3" v-else>
+    <div class="pr-3 pl-3 pt-4" v-else>
       <h3>Calendario</h3>
       <b-col class="d-flex col-12 mb-2 justify-content-between">
         <div class="d-flex align-items-center">
@@ -44,20 +44,21 @@
         @change="assignEvents">
       </v-calendar>
     </div>
+
     <b-modal ref="modal-scoped"
       centered>
       <template #modal-header="{ }">
-        <!-- Emulate built in modal header close button action -->
         <h5>{{ selectedEvent.name }}</h5>
       </template>
 
       <template #default="{  }">
         <p><b>Hora: </b>{{ hour }}</p>
         <p><b>Profesora: </b>{{ selectedEvent.teacher }}</p>
+        <p>{{ selectedEvent.people }}/20 participantes</p>
       </template>
 
       <template #modal-footer="{ cancel }">
-        <b-button size="sm" variant="info" @click="book_class()">
+        <b-button size="sm" variant="info" @click="book_class()" :disabled="selectedEvent.name.includes('RESERVADO') || selectedEvent.people >= 20">
           RESERVAR
         </b-button>
         <b-button size="sm" variant="outline-danger" @click="cancel()">
@@ -85,6 +86,7 @@ export default {
     loading: true,
     loadingSchedule: true,
     loadingBooks: true,
+    loadingPeople: true,
     mode: 'stack',
     selected: 'week',
     focus: '',
@@ -100,6 +102,7 @@ export default {
     selectedElement: null,
     selectedOpen: false,
     events: [],
+    people_per_class: [],
     color: {
       PILATES: '#00acc1',
       CORE: '#7986cb',
@@ -117,6 +120,7 @@ export default {
   mounted () {
     this.get_schedule()
     this.get_books()
+    this.get_people_per_class()
   },
   created () {
   },
@@ -151,28 +155,6 @@ export default {
       this.getHour()
       this.$refs['modal-scoped'].show()
     },
-    // updateRange ({ start, end }) {
-    //   const events = []
-    //   const min = new Date(`${start.date}T00:00:00`)
-    //   const max = new Date(`${end.date}T23:59:59`)
-    //   const days = (max.getTime() - min.getTime()) / 864000000
-    //   const eventCount = this.rnd(days, days + 20)
-    //   for (let i = 0; i < eventCount; i++) {
-    //     const allDay = this.rnd(0, 3) === 0
-    //     const firstTimestamp = this.rnd(min.getTime(), max.getTime())
-    //     const first = new Date(firstTimestamp - (firstTimestamp % 900000))
-    //     const secondTimestamp = this.rnd(2, allDay ? 288 : 8) * 900000
-    //     const second = new Date(first.getTime() + secondTimestamp)
-    //     events.push({
-    //       name: this.names[this.rnd(0, this.names.length - 1)],
-    //       start: first,
-    //       end: second,
-    //       color: this.colors[this.rnd(0, this.colors.length - 1)],
-    //       timed: !allDay
-    //     })
-    //   }
-    //   this.events = events
-    // },
     rnd (a, b) {
       return Math.floor((b - a + 1) * Math.random()) + a
     },
@@ -182,6 +164,21 @@ export default {
           if (response.Items.length > 0) {
             this.books = response.Items
             this.loadingBooks = false
+          }
+        })
+        .catch((error) => {
+          console.error(error)
+        })
+        .finally(() => {
+          this.checkLoading()
+        })
+    },
+    get_people_per_class () {
+      calendarServices.get_people_per_class()
+        .then(response => {
+          if (response.Items.length > 0) {
+            this.people_per_class = response.Items
+            this.loadingPeople = false
           }
         })
         .catch((error) => {
@@ -207,16 +204,19 @@ export default {
         })
     },
     checkLoading () {
-      if (!this.loadingSchedule && !this.loadingBooks) {
+      if (!this.loadingSchedule && !this.loadingBooks && !this.loadingPeople) {
         this.loading = false
       }
     },
     book_class () {
       this.loading = true
+      const formattedStart = this.selectedEvent.start.getFullYear() + '-' + ('0' + (this.selectedEvent.start.getMonth() + 1)).slice(-2) + '-' + ('0' + this.selectedEvent.start.getDate()).slice(-2)
+      const formattedEnd = this.selectedEvent.end.getFullYear() + '-' + ('0' + (this.selectedEvent.end.getMonth() + 1)).slice(-2) + '-' + ('0' + this.selectedEvent.end.getDate()).slice(-2)
+
       const aux = {
         name: this.selectedEvent.name,
-        start: utils.getDatestr(this.selectedEvent.start) + ' ' + utils.getDatestrHours(this.selectedEvent.start) + ':00',
-        end: utils.getDatestr(this.selectedEvent.end) + ' ' + utils.getDatestrHours(this.selectedEvent.end) + ':00'
+        start: formattedStart + ' ' + utils.getDatestrHours(this.selectedEvent.start) + ':00',
+        end: formattedEnd + ' ' + utils.getDatestrHours(this.selectedEvent.end) + ':00'
       }
 
       calendarServices.book_class(aux, this.user_logued.email)
@@ -235,15 +235,23 @@ export default {
         })
     },
     checkIsBooked () {
-      this.events.forEach(element => {
-        this.books.forEach(item => {
-          const aux = new Date(item.start_date)
-          aux.setHours(aux.getHours() - 2)
-          if (utils.getDateStrBooks(new Date(element.start)) === utils.getDateStrBooks(aux)) {
-            element.name += ' - RESERVADO'
-          }
+      if (this.events.length > 0 && this.books.length > 0) {
+        this.events.forEach(element => {
+          element.people = 0
+          this.books.forEach(item => {
+            const aux = new Date(item.start_date)
+            aux.setHours(aux.getHours() - 2)
+            if (utils.getDateStrBooks(new Date(element.start)) === utils.getDateStrBooks(aux)) {
+              element.name += ' - RESERVADO'
+            }
+          })
+          this.people_per_class.forEach(row => {
+            if (utils.getDateStrBooks(new Date(element.start)) === row.start_date) {
+              element.people = row.count
+            }
+          })
         })
-      })
+      }
     },
     assignEvents ({ start, end }) {
       this.$refs.calendar.checkChange()
