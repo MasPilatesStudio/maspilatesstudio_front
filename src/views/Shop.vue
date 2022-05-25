@@ -76,7 +76,10 @@
         </template>
       </b-carousel-slide>
     </b-carousel>
-    <div class="m-4">
+    <div v-if="loading">
+      <b-spinner style="width: 3rem; height: 3rem;" variant="info"></b-spinner>
+    </div>
+    <div class="m-4" v-else>
       <h3>TIENDA</h3>
       <div class="d-flex">
         <b-icon icon="filter" class="h3 mr-2 sidebar" v-b-toggle.sidebar-1></b-icon>
@@ -147,52 +150,23 @@
         </b-sidebar>
         <div class="d-flex m-2 flex-wrap justify-content-center">
           <b-card
+            v-for="product in products" :key="product.id"
             tag="article"
             style="max-width: 18rem; height: 25rem;"
             class="m-2">
             <img
               class="d-block img-fluid w-100 p-3"
               style="height: 60%; object-fit: contain;"
-              src="../assets/shop/81N1jamp9eL._AC_SY355_.jpg"
+              :src="getImgUrl(product)"
               alt="image slot">
             <div class="container-lines">
               <div class="line"></div>
-                <b-icon icon="chevron-up" aria-hidden="true"></b-icon>
+                <b-icon icon="tags-fill" aria-hidden="true"></b-icon>
               <div class="line"></div>
             </div>
             <b-card-text class="pb-3 pl-3 pr-3 d-flex justify-content-center" style="height: 35%; flex-direction: column">
-              <h4>Article</h4>
-              Some quick example text to build on the card title.
-            </b-card-text>
-          </b-card>
-
-          <b-card
-            tag="article"
-            style="max-width: 18rem; height: 25rem;"
-            class="m-2">
-            <img
-              class="d-block img-fluid w-100 "
-              style="height: 60%; object-fit: contain;"
-              src="../assets/shop/banda-elastica-latex-densidad-media.jpg"
-              alt="image slot">
-            <b-card-text>
-              <h4>Article</h4>
-              Some quick example text to build on the card title.
-            </b-card-text>
-          </b-card>
-
-          <b-card
-            tag="article"
-            style="max-width: 18rem; height: 25rem;"
-            class="m-2">
-            <img
-              class="d-block img-fluid w-100"
-              style="height: 60%; object-fit: contain;"
-              src="../assets/shop/Gliding-Disc-Hardwood.jpg"
-              alt="image slot">
-            <b-card-text>
-              <h4>Article</h4>
-              Some quick example text to build on the card title.
+              <h4>{{ product.name }}</h4>
+              <p>{{ product.description }}</p>
             </b-card-text>
           </b-card>
         </div>
@@ -202,10 +176,14 @@
 </template>
 
 <script>
+import shopServices from '@/services/shopServices.js'
+import { mapGetters } from 'vuex'
+
 export default {
   name: 'ShopPage',
   data () {
     return {
+      search: '',
       slide: 0,
       sliding: null,
       order: null,
@@ -213,8 +191,17 @@ export default {
         { value: null, text: 'Lo más nuevo' },
         { value: 'asc', text: 'Precio: De más alto a más bajo' },
         { value: 'desc', text: 'Precio: De más bajo a más alta' }
-      ]
+      ],
+      products: [],
+      loading: true,
+      loadingProducts: true
     }
+  },
+  computed: {
+    ...mapGetters({ user_logued: 'user_logued' })
+  },
+  mounted () {
+    this.get_products()
   },
   methods: {
     onSlideStart (slide) {
@@ -222,6 +209,29 @@ export default {
     },
     onSlideEnd (slide) {
       this.sliding = false
+    },
+    getImgUrl (product) {
+      return require('@/assets/shop/' + product.image)
+    },
+    get_products () {
+      shopServices.get_products()
+        .then(response => {
+          if (response.Items.length > 0) {
+            this.products = response.Items
+            this.loadingProducts = false
+          }
+        })
+        .catch((error) => {
+          console.error(error)
+        })
+        .finally(() => {
+          this.checkLoading()
+        })
+    },
+    checkLoading () {
+      if (this.loadingProducts === false) {
+        this.loading = false
+      }
     }
   }
 }

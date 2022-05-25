@@ -1,11 +1,13 @@
 import { services } from '@/services/services'
 import { apiHostBaseUrl } from '@/apiHost/apiHost'
+const prefix = 'shop'
 
-const dataServices = {
-  getMessage () {
+const shopServices = {
+
+  get_products () {
     return new Promise((resolve, reject) => {
       services.get({
-        path: apiHostBaseUrl + 'users/users'
+        path: apiHostBaseUrl + prefix + '/get_products'
       })
         .then(response => {
           resolve(response.data)
@@ -16,5 +18,4 @@ const dataServices = {
     })
   }
 }
-
-export default dataServices
+export default shopServices
