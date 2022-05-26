@@ -148,8 +148,8 @@
             </b-collapse>
           </div>
         </b-sidebar>
-        <div class="d-flex m-2 flex-wrap justify-content-center">
-          <b-card
+        <div class="d-flex m-2 flex-wrap justify-content-center gap">
+          <!-- <b-card
             v-for="product in products" :key="product.id"
             tag="article"
             style="max-width: 18rem; height: 25rem;"
@@ -168,7 +168,25 @@
               <h4>{{ product.name }}</h4>
               <p>{{ product.description }}</p>
             </b-card-text>
-          </b-card>
+          </b-card> -->
+          <div
+            v-for="product in products" :key="product.id"
+            class="product-card">
+            <div class="product-tumb">
+              <img :src="getImgUrl(product)" alt="">
+            </div>
+            <div class="product-details">
+              <span class="product-catagory">{{ product.caategory }}</span>
+              <h4><a href="">{{ product.name }}</a></h4>
+              <p>{{ product.description }}</p>
+              <div class="product-bottom-details pt-2">
+                <div class="product-price">{{ product.price }}€</div>
+                <div class="product-links">
+                  <b-icon icon="cart-fill" aria-hidden="true"></b-icon>
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
     </div>
@@ -236,13 +254,15 @@ export default {
   }
 }
 </script>
-<style scoped>
+<style lang="scss" scoped>
+@import '../assets/varibles';
+
 .height {
   max-height: 50vh;
 }
 
-.card-body {
-  padding: 0;
+.gap {
+  gap: 10px;
 }
 
 @media(min-width: 850px) {
@@ -263,26 +283,94 @@ export default {
   }
 }
 
-.container-lines{
-  width:100%;
-  display:flex;
-  justify-content:center;
-  align-items:center;
-}
-
-.container-lines > svg {
-  color: #35858b8a;
-}
-
-.line{
-  margin:0 .75rem;
-  background-color:#35858b8a;
-  height:2px;
-  width:80px;
-}
-
 .collapsed > .when-open,
 .not-collapsed > .when-closed {
   display: none;
+}
+
+.product-card {
+  width: 18rem;
+  height: 25rem;
+  position: relative;
+  box-shadow: 0 2px 7px #dfdfdf;
+  background: #fafafa;
+}
+
+.product-tumb {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 50%;
+  background: #f0f0f0;
+  padding: 10px;
+}
+
+.product-details {
+  padding: 10px;
+}
+
+.product-catagory {
+  display: block;
+  font-size: 12px;
+  font-weight: 700;
+  text-transform: uppercase;
+  color: #9e9e9e;
+  margin-bottom: 18px;
+}
+
+.product-details h4 a {
+  font-weight: 500;
+  display: block;
+  margin-bottom: 18px;
+  text-transform: uppercase;
+  color: #363636;
+  text-decoration: none;
+  transition: 0.3s;
+}
+
+.product-details h4 a:hover {
+  color: $third-color;
+}
+
+.product-details p {
+  font-size: 15px;
+  line-height: 22px;
+  margin-bottom: 18px;
+  color: #999;
+}
+
+.product-bottom-details {
+  overflow: hidden;
+  border-top: 1px solid #eee;
+  position: absolute;
+  bottom: 10px;
+  display: flex;
+  justify-content: space-between;
+  width: 100%;
+  left: 0;
+}
+
+.product-bottom-details div {
+  float: left;
+  width: 50%;
+}
+
+.product-price {
+  font-size: 18px;
+  color: $third-color;
+  font-weight: 600;
+}
+
+.product-links svg {
+  display: inline-block;
+  margin-left: 5px;
+  color: #9e9e9e;
+  transition: 0.3s;
+  font-size: 17px;
+  text-align: right;
+}
+
+.product-links svg:hover {
+  color: $third-color;
 }
 </style>

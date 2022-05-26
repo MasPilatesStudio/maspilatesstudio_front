@@ -57,7 +57,7 @@
         <p>{{ selectedEvent.people }}/20 participantes</p>
         <span
           class="col-12"
-          v-if="user_logued.rol == 'Administrator'">
+          v-if="user_logued.rol == 'Administrator' && selectedEvent.users">
           <p class="font-weight-bold">Lista de reservas</p>
           <div class="d-flex flex-wrap col-12">
             <p class="pl-2 col-4" v-for="user in selectedEvent.users" :key="user">
