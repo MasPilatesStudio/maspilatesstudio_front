@@ -83,12 +83,12 @@
       <h3>TIENDA</h3>
       <div class="d-flex">
         <b-icon icon="filter" class="h3 mr-2 sidebar" v-b-toggle.sidebar-1></b-icon>
-        <b-form-input v-model="search" type="search" placeholder="Buscar ..."></b-form-input>
+        <b-form-input v-model="filters.search" type="search" placeholder="Buscar ..." @change="get_products()"></b-form-input>
       </div>
       <div class="d-flex">
         <b-card
             tag="article"
-            style="max-width: 18rem; text-align: left;"
+            style="max-width: 19rem; text-align: left;"
             class="m-2 mt-3 filters">
           <div class="px-3 py-2" style="text-align: left">
             <h3>FILTROS</h3>
@@ -98,13 +98,13 @@
               <b-icon icon="chevron-down" aria-hidden="true" class="when-closed"></b-icon>
             </h4>
             <b-collapse id="collapse-1" class="mt-2 ml-4">
-              <p>Materiales</p>
-              <p>Nutrición</p>
-              <p>Ropa</p>
+              <div v-for="category in categories" :key="category">
+                <p @click="filters.category = category, get_products()" class="pointer">{{ category }}</p>
+              </div>
             </b-collapse>
             <h4 class="mt-4">Ordenar por</h4>
               <div class="pl-4 pr-4">
-                <b-form-select v-model="order" :options="options"></b-form-select>
+                <b-form-select v-model="filters.order" :options="options" @change="get_products()"></b-form-select>
               </div>
             <h4 class="mt-4" v-b-toggle.collapse>
               Marcas
@@ -112,10 +112,9 @@
               <b-icon icon="chevron-down" aria-hidden="true" class="when-closed"></b-icon>
             </h4>
             <b-collapse id="collapse" class="ml-4">
-              <b-form-checkbox value="orange">Orange</b-form-checkbox>
-              <b-form-checkbox value="apple">Apple</b-form-checkbox>
-              <b-form-checkbox value="pineapple">Pineapple</b-form-checkbox>
-              <b-form-checkbox value="grape">Grape</b-form-checkbox>
+              <div v-for="brand in brands" :key="brand">
+                <b-form-checkbox :value="brand">{{ brand }}</b-form-checkbox>
+              </div>
             </b-collapse>
           </div>
         </b-card>
@@ -133,7 +132,7 @@
             </b-collapse>
             <h4 class="mt-4">Ordenar por</h4>
               <div class="pl-4 pr-4">
-                <b-form-select v-model="order" :options="options"></b-form-select>
+                <b-form-select v-model="order" :options="options" @change="get_products()"></b-form-select>
               </div>
             <h4 class="mt-4" v-b-toggle.collapse>
               Marcas
@@ -149,34 +148,16 @@
           </div>
         </b-sidebar>
         <div class="d-flex m-2 flex-wrap justify-content-center gap">
-          <!-- <b-card
-            v-for="product in products" :key="product.id"
-            tag="article"
-            style="max-width: 18rem; height: 25rem;"
-            class="m-2">
-            <img
-              class="d-block img-fluid w-100 p-3"
-              style="height: 60%; object-fit: contain;"
-              :src="getImgUrl(product)"
-              alt="image slot">
-            <div class="container-lines">
-              <div class="line"></div>
-                <b-icon icon="tags-fill" aria-hidden="true"></b-icon>
-              <div class="line"></div>
-            </div>
-            <b-card-text class="pb-3 pl-3 pr-3 d-flex justify-content-center" style="height: 35%; flex-direction: column">
-              <h4>{{ product.name }}</h4>
-              <p>{{ product.description }}</p>
-            </b-card-text>
-          </b-card> -->
+          <p v-if="products.length === 0">No hay registros</p>
           <div
+            v-else
             v-for="product in products" :key="product.id"
-            class="product-card">
+            class="product-card mt-2">
             <div class="product-tumb">
               <img :src="getImgUrl(product)" alt="">
             </div>
             <div class="product-details">
-              <span class="product-catagory">{{ product.caategory }}</span>
+              <span class="product-catagory">{{ product.category }}</span>
               <h4><a href="">{{ product.name }}</a></h4>
               <p>{{ product.description }}</p>
               <div class="product-bottom-details pt-2">
@@ -201,18 +182,26 @@ export default {
   name: 'ShopPage',
   data () {
     return {
-      search: '',
       slide: 0,
       sliding: null,
       order: null,
       options: [
         { value: null, text: 'Lo más nuevo' },
-        { value: 'asc', text: 'Precio: De más alto a más bajo' },
-        { value: 'desc', text: 'Precio: De más bajo a más alta' }
+        { value: 'desc', text: 'Precio: De más alto a más bajo' },
+        { value: 'asc', text: 'Precio: De más bajo a más alta' }
       ],
       products: [],
+      categories: [],
+      brands: [],
+      filters: {
+        category: '',
+        order: '',
+        brand: '',
+        search: ''
+      },
       loading: true,
-      loadingProducts: true
+      loadingProducts: true,
+      loadingCategories: true
     }
   },
   computed: {
@@ -220,6 +209,8 @@ export default {
   },
   mounted () {
     this.get_products()
+    this.get_categories()
+    this.get_brands()
   },
   methods: {
     onSlideStart (slide) {
@@ -232,7 +223,7 @@ export default {
       return require('@/assets/shop/' + product.image)
     },
     get_products () {
-      shopServices.get_products()
+      shopServices.get_products(this.filters)
         .then(response => {
           if (response.Items.length > 0) {
             this.products = response.Items
@@ -246,8 +237,38 @@ export default {
           this.checkLoading()
         })
     },
+    get_categories () {
+      shopServices.get_categories()
+        .then(response => {
+          if (response.Items.length > 0) {
+            this.categories = response.Items
+            this.loadingCategories = false
+          }
+        })
+        .catch((error) => {
+          console.error(error)
+        })
+        .finally(() => {
+          this.checkLoading()
+        })
+    },
+    get_brands () {
+      shopServices.get_brands()
+        .then(response => {
+          if (response.Items.length > 0) {
+            this.brands = response.Items
+            this.loadingBrands = false
+          }
+        })
+        .catch((error) => {
+          console.error(error)
+        })
+        .finally(() => {
+          this.checkLoading()
+        })
+    },
     checkLoading () {
-      if (this.loadingProducts === false) {
+      if (!this.loadingProducts && !this.loadingCategories && !this.loadingBrands) {
         this.loading = false
       }
     }
@@ -301,7 +322,7 @@ export default {
   align-items: center;
   justify-content: center;
   height: 50%;
-  background: #f0f0f0;
+  background: #d6d9dc;
   padding: 10px;
 }
 
