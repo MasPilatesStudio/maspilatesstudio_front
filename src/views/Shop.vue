@@ -124,7 +124,6 @@
         </b-card>
         <b-sidebar id="sidebar-1" title="FILTROS" shadow >
           <div class="px-3 py-2" style="text-align: left">
-            <h3>FILTROS</h3>
             <h4 class="mt-2" v-b-toggle.collapse-1>
               Categorías
               <b-icon icon="chevron-up" aria-hidden="true" class="when-open"></b-icon>

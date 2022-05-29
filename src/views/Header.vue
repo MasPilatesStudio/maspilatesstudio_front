@@ -21,6 +21,10 @@
           <b-dropdown-item href="#">PERFIL</b-dropdown-item>
           <b-dropdown-item-button>CERRAR SESIÓN</b-dropdown-item-button>
         </b-nav-item-dropdown>
+        <b-button variant="outline-secondary" class="cart">
+          <b-icon icon="cart-fill" aria-hidden="true"></b-icon>
+          <b-badge variant="danger" id="cart_menu_num">4</b-badge>
+        </b-button>
       </b-navbar-nav>
     </b-collapse>
   </b-navbar>
@@ -96,4 +100,23 @@ export default {
   }
 }
 
+.cart {
+  position: relative;
+  border: none;
+}
+
+#cart_menu_num {
+  position: absolute;
+  font-size: small;
+  top: 4px;
+  left: 62%;
+  background: red;
+  width: 15px;
+  height: 15px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  color: white;
+  padding: 2px;
+}
 </style>
