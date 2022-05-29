@@ -179,15 +179,20 @@
         </div>
       </div>
     </div>
+    <Footer />
   </div>
 </template>
 
 <script>
 import shopServices from '@/services/shopServices.js'
 import { mapGetters } from 'vuex'
+import Footer from './Footer.vue'
 
 export default {
   name: 'ShopPage',
+  components: {
+    Footer
+  },
   data () {
     return {
       slide: 0,
