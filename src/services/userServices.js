@@ -40,7 +40,7 @@ const dataServices = {
   logout () {
     return new Promise((resolve, reject) => {
       services.get({
-        url: apiHostBaseUrl + prefix + '/logout'
+        path: apiHostBaseUrl + prefix + '/logout'
       })
         .then(response => {
           resolve(response.data)

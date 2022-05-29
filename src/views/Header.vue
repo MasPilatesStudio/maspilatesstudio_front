@@ -19,7 +19,7 @@
             USUARIO
           </template>
           <b-dropdown-item href="#">PERFIL</b-dropdown-item>
-          <b-dropdown-item-button>CERRAR SESIÓN</b-dropdown-item-button>
+          <b-dropdown-item-button @click="logout()">CERRAR SESIÓN</b-dropdown-item-button>
         </b-nav-item-dropdown>
         <b-button variant="outline-secondary" class="cart">
           <b-icon icon="cart-fill" aria-hidden="true"></b-icon>
@@ -37,17 +37,12 @@ export default {
   name: 'HomeMessage',
   data () {
     return {
-      // nav: null
     }
   },
   created () {
-    // this.nav = document.querySelector('.nav-link')
     this.cerrar = document.querySelector('#cerrar')
   },
   methods: {
-    // click () {
-    //   this.nav.classList.toggle('open')
-    // },
     logout () {
       userServices.logout()
         .then(response => {
@@ -98,6 +93,20 @@ export default {
     padding-left: $margin;
     padding-right: $margin;
   }
+  #cart_menu_num {
+    position: absolute;
+    font-size: small;
+    top: 4px;
+    left: 62%;
+    background: red;
+    width: 15px;
+    height: 15px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    color: white;
+    padding: 2px;
+  }
 }
 
 .cart {
@@ -109,7 +118,7 @@ export default {
   position: absolute;
   font-size: small;
   top: 4px;
-  left: 62%;
+  left: 51%;
   background: red;
   width: 15px;
   height: 15px;

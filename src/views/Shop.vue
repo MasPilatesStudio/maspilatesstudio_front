@@ -196,7 +196,6 @@ export default {
     return {
       slide: 0,
       sliding: null,
-      order: null,
       options: [
         { value: null, text: 'Lo más nuevo' },
         { value: 'desc', text: 'Precio: De más alto a más bajo' },
@@ -207,7 +206,7 @@ export default {
       brands: [],
       filters: {
         category: '',
-        order: '',
+        order: null,
         brands: [],
         search: ''
       },
