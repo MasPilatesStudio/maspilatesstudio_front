@@ -88,7 +88,7 @@
       <div class="d-flex">
         <b-card
             tag="article"
-            style="max-width: 19rem; text-align: left;"
+            style="max-width: 15rem; min-width: 15rem; text-align: left;"
             class="m-2 mt-3 filters">
           <div class="px-3 py-2" style="text-align: left">
             <h3>FILTROS</h3>
@@ -112,27 +112,32 @@
               <b-icon icon="chevron-down" aria-hidden="true" class="when-closed"></b-icon>
             </h4>
             <b-collapse id="collapse" class="ml-4">
-              <div v-for="brand in brands" :key="brand">
+              <b-form-checkbox-group
+                v-model="filters.brands"
+                v-for="brand in brands"
+                :key="brand"
+                @input="get_products()">
                 <b-form-checkbox :value="brand">{{ brand }}</b-form-checkbox>
-              </div>
+              </b-form-checkbox-group>
             </b-collapse>
           </div>
         </b-card>
         <b-sidebar id="sidebar-1" title="FILTROS" shadow >
           <div class="px-3 py-2" style="text-align: left">
+            <h3>FILTROS</h3>
             <h4 class="mt-2" v-b-toggle.collapse-1>
               Categorías
               <b-icon icon="chevron-up" aria-hidden="true" class="when-open"></b-icon>
               <b-icon icon="chevron-down" aria-hidden="true" class="when-closed"></b-icon>
             </h4>
             <b-collapse id="collapse-1" class="mt-2 ml-4">
-              <p>Materiales</p>
-              <p>Nutrición</p>
-              <p>Ropa</p>
+              <div v-for="category in categories" :key="category">
+                <p @click="filters.category = category, get_products()" class="pointer">{{ category }}</p>
+              </div>
             </b-collapse>
             <h4 class="mt-4">Ordenar por</h4>
               <div class="pl-4 pr-4">
-                <b-form-select v-model="order" :options="options" @change="get_products()"></b-form-select>
+                <b-form-select v-model="filters.order" :options="options" @change="get_products()"></b-form-select>
               </div>
             <h4 class="mt-4" v-b-toggle.collapse>
               Marcas
@@ -140,15 +145,18 @@
               <b-icon icon="chevron-down" aria-hidden="true" class="when-closed"></b-icon>
             </h4>
             <b-collapse id="collapse" class="ml-4">
-              <b-form-checkbox value="orange">Orange</b-form-checkbox>
-              <b-form-checkbox value="apple">Apple</b-form-checkbox>
-              <b-form-checkbox value="pineapple">Pineapple</b-form-checkbox>
-              <b-form-checkbox value="grape">Grape</b-form-checkbox>
+              <b-form-checkbox-group
+                v-model="filters.brands"
+                v-for="brand in brands"
+                :key="brand"
+                @input="get_products()">
+                <b-form-checkbox :value="brand">{{ brand }}</b-form-checkbox>
+              </b-form-checkbox-group>
             </b-collapse>
           </div>
         </b-sidebar>
-        <div class="d-flex m-2 flex-wrap justify-content-center gap">
-          <p v-if="products.length === 0">No hay registros</p>
+        <div class="d-flex m-2 flex-wrap justify-content-center gap" style="flex-grow: 1;">
+          <p v-if="!checkLength">No hay registros para tu búsqueda</p>
           <div
             v-else
             v-for="product in products" :key="product.id"
@@ -196,7 +204,7 @@ export default {
       filters: {
         category: '',
         order: '',
-        brand: '',
+        brands: [],
         search: ''
       },
       loading: true,
@@ -205,7 +213,13 @@ export default {
     }
   },
   computed: {
-    ...mapGetters({ user_logued: 'user_logued' })
+    ...mapGetters({ user_logued: 'user_logued' }),
+    checkLength () {
+      if (this.products.length > 0) {
+        return true
+      }
+      return false
+    }
   },
   mounted () {
     this.get_products()
@@ -225,7 +239,9 @@ export default {
     get_products () {
       shopServices.get_products(this.filters)
         .then(response => {
-          if (response.Items.length > 0) {
+          if (response.Items === 'No hay registros') {
+            this.products = []
+          } else if (response.Items.length > 0) {
             this.products = response.Items
             this.loadingProducts = false
           }
