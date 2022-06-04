@@ -86,6 +86,11 @@ img {
 .pointer {
   cursor: pointer;
 }
+
 .link-black {
+  color: $black;
+}
+
+.link-black:hover {
   color: $black;
 }

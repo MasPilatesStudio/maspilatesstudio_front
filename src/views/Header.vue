@@ -12,7 +12,7 @@
       <b-navbar-nav class="ml-auto">
         <b-nav-item to="/">INICIO</b-nav-item>
         <b-nav-item to="/shop">TIENDA</b-nav-item>
-        <b-nav-item to="/calendar">CALENDARIO</b-nav-item>
+        <b-nav-item to="/calendar" v-show="user_logued">CALENDARIO</b-nav-item>
         <b-nav-item-dropdown right>
           <!-- Using 'button-content' slot -->
           <template #button-content>
@@ -32,12 +32,16 @@
 </template>
 <script>
 import userServices from '@/services/userServices.js'
+import { mapGetters } from 'vuex'
 
 export default {
   name: 'HeaderComponent',
   data () {
     return {
     }
+  },
+  computed: {
+    ...mapGetters({ user_logued: 'user_logued' })
   },
   created () {
     this.cerrar = document.querySelector('#cerrar')

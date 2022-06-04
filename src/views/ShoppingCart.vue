@@ -3,8 +3,8 @@
     <div v-if="loading">
       <b-spinner style="width: 3rem; height: 3rem;" variant="info"></b-spinner>
     </div>
-    <div class="m-4" v-else>
-      <h3>MI CARRITO</h3>
+    <div class="m-4 p-4" v-else>
+      <h3 class="p-3">MI CARRITO</h3>
         <b-table
           responsive
           :items="products"
@@ -16,13 +16,23 @@
           <template #cell(price)="data">
             {{ data.item.price }}€
           </template>
-          <template #cell(total_price)="data">
-            {{ data.item.price * data.item.quantity }}€
+          <template #cell(quantity)="data">
+            <b-form-spinbutton id="demo-sb" v-model="data.item.quantity" min="1" max="100" @change="getTotal()"></b-form-spinbutton>
           </template>
-          <template #cell(Quitar)>
+          <template #cell(total_price)="data">
+            {{ getTotalPrice(data.item) }} €
+          </template>
+          <template #cell(Eliminar)>
             <b-icon icon="x" class="h3"></b-icon>
           </template>
         </b-table>
+        <div class="d-flex justify-content-between mt-4">
+          <h5><router-link class="link-black" to="/shop">Seguir comprando</router-link></h5>
+          <div>
+            <h4>Total: {{ total.toFixed(2) }}</h4>
+            <b-button size="lg" class="mt-4" variant="info">Procesar pedido</b-button>
+          </div>
+        </div>
     </div>
   </div>
 </template>
@@ -42,9 +52,10 @@ export default {
         { key: 'price', label: 'Precio unidad', tdClass: 'align-middle' },
         { key: 'quantity', label: 'Cantidad', tdClass: 'align-middle' },
         { key: 'total_price', label: 'Precio final', tdClass: 'align-middle' },
-        { key: 'Quitar', label: 'Quitar', tdClass: 'align-middle' }
+        { key: 'Eliminar', label: 'Eliminar', tdClass: 'align-middle' }
       ],
-      products: []
+      products: [],
+      total: 0
     }
   },
   computed: {
@@ -54,6 +65,7 @@ export default {
     if (this.user_logued !== undefined) this.get_shopping_cart()
     else {
       this.products = this.store_products
+      this.getTotal()
       this.loadingProducts = false
       this.checkLoading()
     }
@@ -62,6 +74,16 @@ export default {
     getImgUrl (product) {
       return require('@/assets/shop/' + product.image)
     },
+    getTotalPrice (data) {
+      const num = data.price * data.quantity
+      return num.toFixed(2)
+    },
+    getTotal () {
+      this.total = 0
+      this.products.forEach(element => {
+        this.total += element.price * element.quantity
+      })
+    },
     get_shopping_cart () {
       shopServices.get_shopping_cart(this.user_logued.email)
         .then(response => {
@@ -69,6 +91,7 @@ export default {
             this.products = []
           } else if (response.Items.length > 0) {
             this.products = response.Items
+            this.getTotal()
             this.loadingProducts = false
           }
         })
@@ -92,9 +115,5 @@ export default {
   height: 80px;
   width: 80px;
   object-fit: contain;
-}
-
-.table td {
-  vertical-align: middle !important;
 }
 </style>
