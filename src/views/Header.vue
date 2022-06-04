@@ -49,7 +49,6 @@ export default {
           if (response.response === 'OK') {
             this.$store.commit('del_user')
             this.$router.push('/')
-            this.$router.go(0)
           }
         })
         .catch((error) => {

@@ -247,7 +247,7 @@ export default {
       }
     },
     addToShoppingCartLogued (product) {
-      shopServices.add_to_shopping_cart(this.user_logued.email, product.id)
+      shopServices.add_to_shopping_cart(product.id, this.user_logued.email)
         .then(response => {
           if (response.message !== 'OK') {
             this.$bvToast.toast('Lo sentimos, algo ha ido mal', {

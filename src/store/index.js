@@ -24,8 +24,24 @@ export default new Vuex.Store({
       localStorage.removeItem('user')
     },
     set_product (state, product) {
-      state.products.push(product)
-      localStorage.products = JSON.stringify(state.products)
+      product.quantity = 1
+      let sigue = true
+      let products = []
+      if (localStorage.products !== undefined) {
+        products = JSON.parse(localStorage.products)
+        for (let i = 0; i < products.length; i++) {
+          if (products[i].id === product.id) {
+            sigue = false
+            products[i].quantity += 1
+          }
+        }
+      }
+      if (sigue) products.push(product)
+      state.products = products
+      localStorage.products = JSON.stringify(products)
+    },
+    set_products (state, products) {
+      state.products = products
     },
     del_product (state, product) {
       const products = state.products
