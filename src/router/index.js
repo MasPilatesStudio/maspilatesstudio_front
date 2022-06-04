@@ -37,9 +37,14 @@ const routes = [
     components: {
       header: () => import('@/views/Header.vue'),
       default: () => import('@/views/Shop')
-    },
-    meta: {
-      requireAuth: true
+    }
+  },
+  {
+    path: '/shoppingCart',
+    name: 'shoppingCart',
+    components: {
+      header: () => import('@/views/Header.vue'),
+      default: () => import('@/views/ShoppingCart')
     }
   }
 ]

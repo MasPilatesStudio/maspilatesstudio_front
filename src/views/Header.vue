@@ -21,7 +21,7 @@
           <b-dropdown-item href="#">PERFIL</b-dropdown-item>
           <b-dropdown-item-button @click="logout()">CERRAR SESIÓN</b-dropdown-item-button>
         </b-nav-item-dropdown>
-        <b-button variant="outline-secondary" class="cart">
+        <b-button variant="outline-secondary" class="cart" to="/shoppingCart">
           <b-icon icon="cart-fill" aria-hidden="true"></b-icon>
           <b-badge variant="danger" id="cart_menu_num">4</b-badge>
         </b-button>
@@ -34,7 +34,7 @@
 import userServices from '@/services/userServices.js'
 
 export default {
-  name: 'HomeMessage',
+  name: 'HeaderComponent',
   data () {
     return {
     }
@@ -49,6 +49,7 @@ export default {
           if (response.response === 'OK') {
             this.$store.commit('del_user')
             this.$router.push('/')
+            this.$router.go(0)
           }
         })
         .catch((error) => {

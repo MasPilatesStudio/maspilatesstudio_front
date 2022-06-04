@@ -170,7 +170,7 @@
               <div class="product-bottom-details pt-2">
                 <div class="product-price">{{ product.price }}€</div>
                 <div class="product-links">
-                  <b-icon icon="cart-fill" aria-hidden="true"></b-icon>
+                  <b-icon icon="cart-fill" aria-hidden="true" @click="addToShoppingCart(product)"></b-icon>
                 </div>
               </div>
             </div>
@@ -238,6 +238,37 @@ export default {
     },
     getImgUrl (product) {
       return require('@/assets/shop/' + product.image)
+    },
+    addToShoppingCart (product) {
+      if (this.user_logued !== undefined) {
+        this.addToShoppingCartLogued(product)
+      } else {
+        this.$store.commit('set_product', product)
+      }
+    },
+    addToShoppingCartLogued (product) {
+      shopServices.add_to_shopping_cart(this.user_logued.email, product.id)
+        .then(response => {
+          if (response.message !== 'OK') {
+            this.$bvToast.toast('Lo sentimos, algo ha ido mal', {
+              title: 'Error',
+              variant: 'danger',
+              solid: true
+            })
+          } else {
+            this.$bvToast.toast('Producto añadido al carrito', {
+              title: 'Información',
+              variant: 'info',
+              solid: true
+            })
+          }
+        })
+        .catch((error) => {
+          console.error(error)
+        })
+        .finally(() => {
+          this.loading = false
+        })
     },
     get_products () {
       shopServices.get_products(this.filters)

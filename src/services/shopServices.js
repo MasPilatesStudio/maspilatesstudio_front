@@ -45,6 +45,36 @@ const shopServices = {
           reject(e)
         })
     })
+  },
+  get_shopping_cart (email) {
+    return new Promise((resolve, reject) => {
+      services.get({
+        path: apiHostBaseUrl + prefix + '/get_shopping_cart/' + email
+      })
+        .then(response => {
+          resolve(response.data)
+        })
+        .catch(e => {
+          reject(e)
+        })
+    })
+  },
+  add_to_shopping_cart (productId, email) {
+    return new Promise((resolve, reject) => {
+      services.post({
+        url: apiHostBaseUrl + prefix + '/add_to_shopping_cart',
+        data: {
+          productId: productId,
+          email: email
+        }
+      })
+        .then(response => {
+          resolve(response.data)
+        })
+        .catch(e => {
+          reject(e)
+        })
+    })
   }
 }
 export default shopServices
