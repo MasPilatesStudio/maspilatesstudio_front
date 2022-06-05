@@ -4,12 +4,10 @@
       <div class="container registro content">
         <b-overlay :show="loading" rounded="sm">
           <b-card :aria-hidden="loading ? 'true' : null" class="p-4 d-flex align-items-center card" no-body>
-            <b-card-header>
-              <h3>Registro</h3>
-            </b-card-header>
+            <h3>Registro</h3>
             <b-card-body class="d-flex col-12">
               <b-col cols="12" class="align-items-center mt-2">
-                <img src="../assets/header_t.png" class="mb-4" height="120">
+                <img src="../assets/header_t.png" class="mb-4" height="120" style="object-fit: contain;">
                 <b-form-input
                   v-model="user.email"
                   type="email"
@@ -45,9 +43,12 @@
                     :show="showError">
                     {{ error }}
                  </b-alert>
-                <b-button :disabled="loading" @click="checkValues()" class="mt-2 primary-button">
+                <b-button :disabled="loading" @click="checkValues()" class="mt-3 primary-button">
                   Registrarme
                 </b-button>
+                <div class="mt-4">
+                  ¿Ya tienes una cuenta? <router-link class="link-black font-weight-bold" to="/"> Iniciar sesión</router-link>
+                </div>
               </b-col>
             </b-card-body>
           </b-card>

@@ -20,7 +20,22 @@ const dataServices = {
         })
     })
   },
-
+  update_send_direction (user) {
+    return new Promise((resolve, reject) => {
+      services.post({
+        url: apiHostBaseUrl + prefix + '/update_send_direction',
+        data: {
+          user: user
+        }
+      })
+        .then(response => {
+          resolve(response.data)
+        })
+        .catch(e => {
+          reject(e)
+        })
+    })
+  },
   login (user) {
     return new Promise((resolve, reject) => {
       services.post({

@@ -30,19 +30,24 @@
           <h5><router-link class="link-black" to="/shop">Seguir comprando</router-link></h5>
           <div>
             <h4>Total: {{ total.toFixed(2) }}</h4>
-            <b-button size="lg" class="mt-4" variant="info">Procesar pedido</b-button>
+            <b-button size="lg" class="mt-4" variant="info" @click="user_logued === undefined ? goToRegister() : modalPedido()">Procesar pedido</b-button>
           </div>
         </div>
     </div>
+    <ModalPedido :products="products"></ModalPedido>
   </div>
 </template>
 
 <script>
 import shopServices from '@/services/shopServices.js'
 import { mapGetters } from 'vuex'
+import ModalPedido from '@/components/Pedido.vue'
 
 export default {
   name: 'HomeMessage',
+  components: {
+    ModalPedido
+  },
   data () {
     return {
       loading: true,
@@ -83,6 +88,12 @@ export default {
       this.products.forEach(element => {
         this.total += element.price * element.quantity
       })
+    },
+    modalPedido () {
+      this.$bvModal.show('realizar-pedido')
+    },
+    goToRegister () {
+      this.$router.push('/register')
     },
     get_shopping_cart () {
       shopServices.get_shopping_cart(this.user_logued.email)
