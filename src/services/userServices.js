@@ -36,6 +36,19 @@ const dataServices = {
         })
     })
   },
+  get_user (email) {
+    return new Promise((resolve, reject) => {
+      services.get({
+        path: apiHostBaseUrl + prefix + '/get_user/' + email
+      })
+        .then(response => {
+          resolve(response.data)
+        })
+        .catch(e => {
+          reject(e)
+        })
+    })
+  },
   login (user) {
     return new Promise((resolve, reject) => {
       services.post({

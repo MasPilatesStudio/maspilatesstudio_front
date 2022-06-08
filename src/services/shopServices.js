@@ -75,6 +75,19 @@ const shopServices = {
           reject(e)
         })
     })
+  },
+  get_publishable_key () {
+    return new Promise((resolve, reject) => {
+      services.get({
+        path: apiHostBaseUrl + prefix + '/config'
+      })
+        .then(response => {
+          resolve(response.data)
+        })
+        .catch(e => {
+          reject(e)
+        })
+    })
   }
 }
 export default shopServices

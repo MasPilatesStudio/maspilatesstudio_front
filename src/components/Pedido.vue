@@ -3,18 +3,18 @@
     centered
     hide-footer>
     <template #modal-header="{ }">
-      <h3 class="m-2" v-if="first">
+      <h2 class="m-2" v-if="first">
         <b-icon
           class="pointer"
           icon="house-door-fill"/>
           Dirección de envío
-      </h3>
-      <h3 class="m-2" v-else>
+      </h2>
+      <h2 class="m-2" v-else>
         <b-icon
           class="pointer"
           icon="credit-card"/>
           Pago con tarjeta
-      </h3>
+      </h2>
     </template>
     <div class="m-3">
       <b-row class="mt-3" v-if="first">
@@ -53,26 +53,20 @@
 
       <b-row class="mt-3" v-else>
         <b-form-input
-            v-model="user.province"
+            v-model="user.tarjetNumber"
             type="text"
             placeholder="Número de la tarjeta*">
         </b-form-input>
         <b-form-input
-            v-model="user.cp"
+            v-model="user.expiration_date"
             type="number"
             placeholder="Fecha de expiración*"
             class="mt-2">
         </b-form-input>
         <b-form-input
-            v-model="user.direction"
+            v-model="user.cvv"
             type="text"
             placeholder="CVC / CVV*"
-            class="mt-2">
-        </b-form-input>
-        <b-form-input
-            v-model="user.phone"
-            type="number"
-            placeholder="Teléfono*"
             class="mt-2">
         </b-form-input>
       </b-row>
@@ -87,6 +81,7 @@
 <script>
 import { mapGetters } from 'vuex'
 import userServices from '@/services/userServices.js'
+import shopServices from '@/services/shopServices.js'
 
 export default {
   name: 'PedidoModal',
@@ -102,12 +97,18 @@ export default {
     stateCp: null,
     stateDirection: null,
     statePhone: null,
-    first: true
+    first: true,
+    loadingPublicKey: true,
+    stripe: null
   }),
   computed: {
     ...mapGetters({ user_logued: 'user_logued' })
   },
   mounted () {
+  },
+  created () {
+    this.getStripePublishableKey()
+    this.getUser()
   },
   methods: {
     updateSendDirection () {
@@ -136,6 +137,34 @@ export default {
     },
     finalizeOrder () {
       console.log('finalizar')
+    },
+    getUser () {
+      userServices.get_user(this.user_logued.email)
+        .then(response => {
+          this.user = response.response
+        })
+        .catch((error) => {
+          console.error(error)
+          this.loading = false
+        })
+        .finally(() => {
+          this.loading = false
+        })
+    },
+
+    getStripePublishableKey () {
+      shopServices.get_publishable_key()
+        .then(response => {
+          console.log(response)
+          if (response.publicKey) {
+            // eslint-disable-next-line no-undef
+            this.stripe = Stripe(response.data.publicKey)
+            this.loadingPublicKey = false
+          }
+        })
+        .catch((error) => {
+          console.error(error)
+        })
     }
   }
 }
