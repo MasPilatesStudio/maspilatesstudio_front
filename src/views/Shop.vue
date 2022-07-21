@@ -154,7 +154,7 @@
             </b-collapse>
           </div>
         </b-sidebar>
-        <div class="d-flex m-2 flex-wrap justify-content-center gap" style="flex-grow: 1;">
+        <div class="d-flex m-2 flex-wrap justify-content-center gap" style="flex-grow: 1;" id="itemList">
           <p v-if="!checkLength">No hay registros para tu búsqueda</p>
           <div
             v-else
@@ -177,6 +177,7 @@
           </div>
         </div>
       </div>
+      <b-pagination v-model="currentPage" aria-controls="itemList" align="right" :total-rows="rows" :per-page="perPage" @input="get_products()"></b-pagination>
     </div>
     <Footer />
   </div>
@@ -194,6 +195,9 @@ export default {
   },
   data () {
     return {
+      perPage: 3,
+      currentPage: 1,
+      count: 0,
       slide: 0,
       sliding: null,
       options: [
@@ -222,9 +226,13 @@ export default {
         return true
       }
       return false
+    },
+    rows () {
+      return this.count
     }
   },
   mounted () {
+    this.get_count_products()
     this.get_products()
     this.get_categories()
     this.get_brands()
@@ -271,7 +279,7 @@ export default {
         })
     },
     get_products () {
-      shopServices.get_products(this.filters)
+      shopServices.get_products(this.filters, this.currentPage, this.perPage)
         .then(response => {
           if (response.Items === 'No hay registros') {
             this.products = []
@@ -279,6 +287,19 @@ export default {
             this.products = response.Items
             this.loadingProducts = false
           }
+        })
+        .catch((error) => {
+          console.error(error)
+        })
+        .finally(() => {
+          this.checkLoading()
+        })
+    },
+    get_count_products () {
+      shopServices.get_count_products()
+        .then(response => {
+          this.count = response.Items
+          this.loadingCount = false
         })
         .catch((error) => {
           console.error(error)
@@ -318,7 +339,7 @@ export default {
         })
     },
     checkLoading () {
-      if (!this.loadingProducts && !this.loadingCategories && !this.loadingBrands) {
+      if (!this.loadingProducts && !this.loadingCategories && !this.loadingBrands && !this.loadingCount) {
         this.loading = false
       }
     }

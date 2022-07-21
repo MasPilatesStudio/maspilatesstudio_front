@@ -21,6 +21,14 @@ const routes = [
     }
   },
   {
+    path: '/profile',
+    name: 'profile',
+    components: {
+      header: () => import('@/views/Header.vue'),
+      default: () => import('@/views/Profile')
+    }
+  },
+  {
     path: '/calendar',
     name: 'calendar',
     components: {

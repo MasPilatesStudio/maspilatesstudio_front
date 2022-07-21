@@ -4,13 +4,28 @@ const prefix = 'shop'
 
 const shopServices = {
 
-  get_products (filters) {
+  get_products (filters, currentPage, perPage) {
     return new Promise((resolve, reject) => {
       services.post({
         url: apiHostBaseUrl + prefix + '/get_products',
         data: {
-          filters
+          filters,
+          currentPage,
+          perPage
         }
+      })
+        .then(response => {
+          resolve(response.data)
+        })
+        .catch(e => {
+          reject(e)
+        })
+    })
+  },
+  get_count_products () {
+    return new Promise((resolve, reject) => {
+      services.get({
+        path: apiHostBaseUrl + prefix + '/get_count_products'
       })
         .then(response => {
           resolve(response.data)

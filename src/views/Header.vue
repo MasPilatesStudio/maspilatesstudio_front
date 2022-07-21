@@ -18,13 +18,20 @@
           <template #button-content>
             USUARIO
           </template>
-          <b-dropdown-item href="#">PERFIL</b-dropdown-item>
+          <b-dropdown-item to="/profile">PERFIL</b-dropdown-item>
           <b-dropdown-item-button @click="logout()">CERRAR SESIÓN</b-dropdown-item-button>
         </b-nav-item-dropdown>
         <b-button variant="outline-secondary" class="cart" to="/shoppingCart">
           <b-icon icon="cart-fill" aria-hidden="true"></b-icon>
           <b-badge variant="danger" id="cart_menu_num">4</b-badge>
         </b-button>
+        <b-nav-item-dropdown>
+          <template #button-content>
+            <b-icon icon="gear-fill" aria-hidden="true"></b-icon>
+          </template>
+          <b-dropdown-item to="/profile">Añadir producto</b-dropdown-item>
+          <b-dropdown-item>Nuevo empleado</b-dropdown-item>
+        </b-nav-item-dropdown>
       </b-navbar-nav>
     </b-collapse>
   </b-navbar>
