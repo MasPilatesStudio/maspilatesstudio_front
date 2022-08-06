@@ -4,7 +4,12 @@
       <b-spinner style="width: 3rem; height: 3rem;" variant="info"></b-spinner>
     </div>
     <div class="m-4 p-4" v-else>
-      <h3 class="p-3">MI CARRITO</h3>
+      <div v-if="products.length === 0">
+        <p>No has añadido ningún producto al carrito</p>
+        <h5><router-link class="link-black" to="/shop">Seguir comprando</router-link></h5>
+      </div>
+      <div v-else>
+        <h3 class="p-3">MI CARRITO</h3>
         <b-table
           responsive
           :items="products"
@@ -33,8 +38,9 @@
             <b-button size="lg" class="mt-4" variant="info" @click="user_logued === undefined ? goToRegister() : modalPedido()">Procesar pedido</b-button>
           </div>
         </div>
+      </div>
+      <ModalPedido :products="products"></ModalPedido>
     </div>
-    <ModalPedido :products="products"></ModalPedido>
   </div>
 </template>
 
@@ -100,6 +106,7 @@ export default {
         .then(response => {
           if (response.Items === 'No hay registros') {
             this.products = []
+            this.loadingProducts = false
           } else if (response.Items.length > 0) {
             this.products = response.Items
             this.getTotal()
