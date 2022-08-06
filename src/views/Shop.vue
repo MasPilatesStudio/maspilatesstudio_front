@@ -177,7 +177,14 @@
           </div>
         </div>
       </div>
-      <b-pagination v-model="currentPage" aria-controls="itemList" align="right" :total-rows="rows" :per-page="perPage" @input="get_products()"></b-pagination>
+      <b-pagination
+        v-model="currentPage"
+        aria-controls="itemList"
+        align="center"
+        :total-rows="rows"
+        :per-page="perPage"
+        @input="get_products()">
+      </b-pagination>
     </div>
     <Footer />
   </div>
@@ -366,6 +373,9 @@ export default {
 @media(min-width: 1000px) {
   .sidebar {
     display: none;
+  }
+  .pagination {
+    margin-left: 17rem;
   }
 }
 
