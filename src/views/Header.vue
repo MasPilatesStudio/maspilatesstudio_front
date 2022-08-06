@@ -23,7 +23,7 @@
         </b-nav-item-dropdown>
         <b-button variant="outline-secondary" class="cart" to="/shoppingCart">
           <b-icon icon="cart-fill" aria-hidden="true"></b-icon>
-          <b-badge variant="danger" id="cart_menu_num">4</b-badge>
+          <b-badge variant="danger" id="cart_menu_num">{{ count }}</b-badge>
         </b-button>
         <b-nav-item-dropdown>
           <template #button-content>
@@ -39,12 +39,14 @@
 </template>
 <script>
 import userServices from '@/services/userServices.js'
+import shopServices from '@/services/shopServices.js'
 import { mapGetters } from 'vuex'
 
 export default {
   name: 'HeaderComponent',
   data () {
     return {
+      count: 0
     }
   },
   computed: {
@@ -52,6 +54,7 @@ export default {
   },
   created () {
     this.cerrar = document.querySelector('#cerrar')
+    this.get_count_products()
   },
   methods: {
     logout () {
@@ -67,6 +70,17 @@ export default {
         })
         .finally(() => {
           this.loading = false
+        })
+    },
+    get_count_products () {
+      shopServices.get_count_shopping_cart(this.user_logued.email)
+        .then(response => {
+          this.count = response.quantity
+        })
+        .catch((error) => {
+          console.error(error)
+        })
+        .finally(() => {
         })
     }
   }

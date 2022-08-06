@@ -74,6 +74,19 @@ const shopServices = {
         })
     })
   },
+  get_count_shopping_cart (email) {
+    return new Promise((resolve, reject) => {
+      services.get({
+        path: apiHostBaseUrl + prefix + '/get_count_shopping_cart/' + email
+      })
+        .then(response => {
+          resolve(response.data)
+        })
+        .catch(e => {
+          reject(e)
+        })
+    })
+  },
   add_to_shopping_cart (productId, email) {
     return new Promise((resolve, reject) => {
       services.post({
@@ -91,10 +104,14 @@ const shopServices = {
         })
     })
   },
-  get_publishable_key () {
+  saveOrder (email, products) {
     return new Promise((resolve, reject) => {
-      services.get({
-        path: apiHostBaseUrl + prefix + '/config'
+      services.post({
+        url: apiHostBaseUrl + prefix + '/add_order',
+        data: {
+          products: products,
+          email: email
+        }
       })
         .then(response => {
           resolve(response.data)

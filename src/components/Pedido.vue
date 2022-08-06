@@ -53,19 +53,25 @@
 
       <b-row class="mt-3" v-else>
         <b-form-input
-            v-model="user.tarjetNumber"
+            v-model="payment.tarjetNumber"
             type="text"
+            :state="stateTarjetNumber"
+            @change="stateTarjetNumber = null"
             placeholder="Número de la tarjeta*">
         </b-form-input>
         <b-form-input
-            v-model="user.expiration_date"
+            v-model="payment.expirationDate"
             type="number"
+            :state="stateExpirationDate"
+            @change="stateExpirationDate = null"
             placeholder="Fecha de expiración*"
             class="mt-2">
         </b-form-input>
         <b-form-input
-            v-model="user.cvv"
+            v-model="payment.cvv"
             type="text"
+            :state="stateCvv"
+            @change="stateCvv = null"
             placeholder="CVC / CVV*"
             class="mt-2">
         </b-form-input>
@@ -93,10 +99,18 @@ export default {
       direction: '',
       phone: ''
     },
+    payment: {
+      tarjetNumber: '',
+      expirationDate: '',
+      cvv: ''
+    },
     stateProvince: null,
     stateCp: null,
     stateDirection: null,
     statePhone: null,
+    stateTarjetNumber: null,
+    stateExpirationDate: null,
+    stateCvv: null,
     first: true,
     loadingPublicKey: true,
     stripe: null
@@ -107,7 +121,7 @@ export default {
   mounted () {
   },
   created () {
-    this.getStripePublishableKey()
+    // this.getStripePublishableKey()
     this.getUser()
   },
   methods: {
@@ -136,7 +150,28 @@ export default {
       }
     },
     finalizeOrder () {
-      console.log('finalizar')
+      if (this.payment.tarjetNumber === '' || this.payment.expirationDate === '' ||
+      this.payment.cvv === '') {
+        console.log(this.payment)
+        if (this.payment.tarjetNumber === '') this.stateTarjetNumber = false
+        if (this.payment.expirationDate === '') this.stateExpirationDate = false
+        if (this.payment.cvv === '') this.stateCvv = false
+      } else {
+        this.user.email = this.user_logued.email
+        shopServices.saveOrder(this.user.email, this.products)
+          .then(response => {
+            if (response.response === 'OK') {
+              console.log(response.response)
+            }
+          })
+          .catch((error) => {
+            console.error(error)
+            this.loading = false
+          })
+          .finally(() => {
+            this.loading = false
+          })
+      }
     },
     getUser () {
       userServices.get_user(this.user_logued.email)
@@ -150,22 +185,22 @@ export default {
         .finally(() => {
           this.loading = false
         })
-    },
-
-    getStripePublishableKey () {
-      shopServices.get_publishable_key()
-        .then(response => {
-          console.log(response)
-          if (response.publicKey) {
-            // eslint-disable-next-line no-undef
-            this.stripe = Stripe(response.data.publicKey)
-            this.loadingPublicKey = false
-          }
-        })
-        .catch((error) => {
-          console.error(error)
-        })
     }
+
+    // getStripePublishableKey () {
+    //   shopServices.get_publishable_key()
+    //     .then(response => {
+    //       console.log(response)
+    //       if (response.publicKey) {
+    //         // eslint-disable-next-line no-undef
+    //         this.stripe = Stripe(response.data.publicKey)
+    //         this.loadingPublicKey = false
+    //       }
+    //     })
+    //     .catch((error) => {
+    //       console.error(error)
+    //     })
+    // }
   }
 }
 </script>
