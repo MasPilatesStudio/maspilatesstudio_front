@@ -50,7 +50,7 @@ export default {
     }
   },
   computed: {
-    ...mapGetters({ user_logued: 'user_logued' })
+    ...mapGetters({ user_logued: 'user_logued', store_products: 'products' })
   },
   created () {
     this.cerrar = document.querySelector('#cerrar')
@@ -73,15 +73,23 @@ export default {
         })
     },
     get_count_products () {
-      shopServices.get_count_shopping_cart(this.user_logued.email)
-        .then(response => {
-          this.count = response.quantity
+      if (this.user_logued !== undefined) {
+        shopServices.get_count_shopping_cart(this.user_logued.email)
+          .then(response => {
+            this.count = response.quantity
+          })
+          .catch((error) => {
+            console.error(error)
+          })
+          .finally(() => {
+          })
+      } else {
+        let total = 0
+        this.store_products.forEach(product => {
+          total += product.quantity
         })
-        .catch((error) => {
-          console.error(error)
-        })
-        .finally(() => {
-        })
+        this.count = total
+      }
     }
   }
 }
