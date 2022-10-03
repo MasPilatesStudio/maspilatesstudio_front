@@ -9,6 +9,7 @@ import axios from 'axios'
 import 'bootstrap/dist/css/bootstrap.css'
 import 'bootstrap-vue/dist/bootstrap-vue.css'
 import './assets/app.scss'
+import { loadStripe } from '@vue-stripe/vue-stripe'
 Vue.config.productionTip = false
 
 Vue.use(BootstrapVue)
@@ -20,6 +21,7 @@ new Vue({
   store,
   axios,
   vuetify,
+  loadStripe,
   render: h => h(App)
 }).$mount('#app')
 

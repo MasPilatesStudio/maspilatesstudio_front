@@ -39,7 +39,7 @@
           </div>
         </div>
       </div>
-      <ModalPedido :products="products"></ModalPedido>
+      <ModalPedido :products="products" v-if="user_logued !== undefined"></ModalPedido>
     </div>
   </div>
 </template>
