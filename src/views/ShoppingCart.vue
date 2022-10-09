@@ -91,9 +91,13 @@ export default {
     },
     getTotal () {
       this.total = 0
+      let totalQuantity = 0
       this.products.forEach(element => {
         this.total += element.price * element.quantity
+        totalQuantity += element.quantity
       })
+      this.$store.commit('set_count_products', totalQuantity)
+      this.$store.commit('set_products', this.products)
     },
     modalPedido () {
       this.$bvModal.show('realizar-pedido')

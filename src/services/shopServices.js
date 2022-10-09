@@ -104,6 +104,22 @@ const shopServices = {
         })
     })
   },
+  add_product (product) {
+    return new Promise((resolve, reject) => {
+      services.post({
+        url: apiHostBaseUrl + prefix + '/add_product',
+        data: {
+          product: product
+        }
+      })
+        .then(response => {
+          resolve(response.data)
+        })
+        .catch(e => {
+          reject(e)
+        })
+    })
+  },
   saveOrder (email, products) {
     return new Promise((resolve, reject) => {
       services.post({

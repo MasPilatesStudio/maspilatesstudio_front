@@ -13,7 +13,7 @@
         <b-nav-item to="/">INICIO</b-nav-item>
         <b-nav-item to="/shop">TIENDA</b-nav-item>
         <b-nav-item to="/calendar" v-show="user_logued">CALENDARIO</b-nav-item>
-        <b-nav-item-dropdown right>
+        <b-nav-item-dropdown right v-show="user_logued">
           <!-- Using 'button-content' slot -->
           <template #button-content>
             USUARIO
@@ -25,11 +25,11 @@
           <b-icon icon="cart-fill" aria-hidden="true"></b-icon>
           <b-badge variant="danger" id="cart_menu_num">{{ count }}</b-badge>
         </b-button>
-        <b-nav-item-dropdown>
+        <b-nav-item-dropdown v-show="user_logued">
           <template #button-content>
             <b-icon icon="gear-fill" aria-hidden="true"></b-icon>
           </template>
-          <b-dropdown-item to="/profile">Añadir producto</b-dropdown-item>
+          <b-dropdown-item to="/profile/#Productos">Añadir producto</b-dropdown-item>
           <b-dropdown-item>Nuevo empleado</b-dropdown-item>
         </b-nav-item-dropdown>
       </b-navbar-nav>
@@ -46,11 +46,10 @@ export default {
   name: 'HeaderComponent',
   data () {
     return {
-      count: 0
     }
   },
   computed: {
-    ...mapGetters({ user_logued: 'user_logued', store_products: 'products' })
+    ...mapGetters({ user_logued: 'user_logued', store_products: 'products', count: 'countProducts' })
   },
   created () {
     this.cerrar = document.querySelector('#cerrar')
@@ -63,6 +62,7 @@ export default {
           if (response.response === 'OK') {
             this.$store.commit('del_user')
             this.$router.push('/')
+            this.$router.go(0)
           }
         })
         .catch((error) => {
@@ -76,7 +76,7 @@ export default {
       if (this.user_logued !== undefined) {
         shopServices.get_count_shopping_cart(this.user_logued.email)
           .then(response => {
-            this.count = response.quantity
+            this.$store.commit('set_count_products', response.quantity)
           })
           .catch((error) => {
             console.error(error)
@@ -88,7 +88,7 @@ export default {
         this.store_products.forEach(product => {
           total += product.quantity
         })
-        this.count = total
+        this.$store.commit('set_count_products', total)
       }
     }
   }

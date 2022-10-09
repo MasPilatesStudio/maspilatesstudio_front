@@ -227,7 +227,7 @@ export default {
     }
   },
   computed: {
-    ...mapGetters({ user_logued: 'user_logued' }),
+    ...mapGetters({ user_logued: 'user_logued', countProducts: 'countProducts' }),
     checkLength () {
       if (this.products.length > 0) {
         return true
@@ -260,6 +260,7 @@ export default {
       } else {
         this.$store.commit('set_product', product)
       }
+      this.$store.commit('set_count_products', parseInt(this.countProducts) + 1)
     },
     addToShoppingCartLogued (product) {
       shopServices.add_to_shopping_cart(product.id, this.user_logued.email)

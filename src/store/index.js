@@ -8,11 +8,13 @@ export default new Vuex.Store({
     token: '',
     email: '',
     rol: '',
-    products: []
+    products: [],
+    countProducts: 0
   },
   getters: {
     user_logued: state => state.user,
-    products: state => state.products
+    products: state => state.products,
+    countProducts: state => state.countProducts
   },
   mutations: {
     set_user (state, user) {
@@ -42,6 +44,7 @@ export default new Vuex.Store({
     },
     set_products (state, products) {
       state.products = products
+      localStorage.products = JSON.stringify(products)
     },
     del_product (state, product) {
       const products = state.products
@@ -51,6 +54,14 @@ export default new Vuex.Store({
       }
       localStorage.removeItem('products')
       localStorage.products = JSON.stringify(products)
+    },
+    set_count_products (state, count) {
+      state.countProducts = count
+      localStorage.countProducts = JSON.stringify(count)
+    },
+    del_count_products (state) {
+      state.countProducts = 0
+      localStorage.countProducts = JSON.stringify(0)
     }
   },
   actions: {

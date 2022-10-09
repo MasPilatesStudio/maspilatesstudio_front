@@ -26,6 +26,7 @@ export default {
   created () {
     if (localStorage.user) store.commit('set_user', JSON.parse(localStorage.user))
     if (localStorage.products) store.commit('set_products', JSON.parse(localStorage.products))
+    if (localStorage.countProducts) store.commit('set_count_products', JSON.parse(localStorage.countProducts))
   },
   methods: {
 
