@@ -120,6 +120,23 @@ const shopServices = {
         })
     })
   },
+  delete_product (email, product) {
+    return new Promise((resolve, reject) => {
+      services.put({
+        url: apiHostBaseUrl + prefix + '/delete_product',
+        data: {
+          email: email,
+          product: product
+        }
+      })
+        .then(response => {
+          resolve(response.data)
+        })
+        .catch(e => {
+          reject(e)
+        })
+    })
+  },
   saveOrder (email, products) {
     return new Promise((resolve, reject) => {
       services.post({

@@ -21,15 +21,17 @@
           <b-dropdown-item to="/profile">PERFIL</b-dropdown-item>
           <b-dropdown-item-button @click="logout()">CERRAR SESIÓN</b-dropdown-item-button>
         </b-nav-item-dropdown>
-        <b-button variant="outline-secondary" class="cart" to="/shoppingCart">
-          <b-icon icon="cart-fill" aria-hidden="true"></b-icon>
-          <b-badge variant="danger" id="cart_menu_num">{{ count }}</b-badge>
-        </b-button>
+        <b-nav-item class="carrito-item">
+          <b-button variant="outline-secondary" class="cart" to="/shoppingCart">
+            <b-icon icon="cart-fill" aria-hidden="true"></b-icon>
+            <b-badge variant="danger" id="cart_menu_num">{{ count }}</b-badge>
+          </b-button>
+        </b-nav-item>
         <b-nav-item-dropdown v-show="user_logued">
           <template #button-content>
             <b-icon icon="gear-fill" aria-hidden="true"></b-icon>
           </template>
-          <b-dropdown-item to="/profile/#Productos">Añadir producto</b-dropdown-item>
+          <b-dropdown-item-button @click="go_to_add_product()">AÑADIR PRODUCTO</b-dropdown-item-button>
           <b-dropdown-item>Nuevo empleado</b-dropdown-item>
         </b-nav-item-dropdown>
       </b-navbar-nav>
@@ -56,6 +58,11 @@ export default {
     this.get_count_products()
   },
   methods: {
+    go_to_add_product () {
+      console.log('Entraa')
+      this.$emit('/profile', this.user)
+    },
+
     logout () {
       userServices.logout()
         .then(response => {
@@ -145,8 +152,12 @@ export default {
 .cart {
   position: relative;
   border: none;
+  top: -5px;
 }
 
+.carrito-item {
+  position: relative;
+}
 #cart_menu_num {
   position: absolute;
   font-size: small;

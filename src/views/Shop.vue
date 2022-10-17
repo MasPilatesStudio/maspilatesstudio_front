@@ -259,6 +259,11 @@ export default {
         this.addToShoppingCartLogued(product)
       } else {
         this.$store.commit('set_product', product)
+        this.$bvToast.toast('Producto añadido al carrito', {
+          title: 'Información',
+          variant: 'info',
+          solid: true
+        })
       }
       this.$store.commit('set_count_products', parseInt(this.countProducts) + 1)
     },

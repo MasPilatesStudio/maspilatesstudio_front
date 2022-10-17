@@ -5,6 +5,7 @@
         <b-overlay :show="loading" rounded="sm">
           <b-card :aria-hidden="loading ? 'true' : null" class="card" no-body>
             <b-tabs card>
+              <!-- Perfil -->
               <b-tab title="Perfil" active>
                 <b-card-body class="d-flex align-items-center col-12">
                   <b-col cols="12" class="align-items-center mt-2">
@@ -47,6 +48,7 @@
                   </b-col>
                 </b-card-body>
               </b-tab>
+              <!-- Productos -->
               <b-tab title="Productos">
                 <b-card-text>
                   <div v-if="loading">

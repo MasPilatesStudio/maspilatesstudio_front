@@ -22,13 +22,13 @@
             {{ data.item.price }}€
           </template>
           <template #cell(quantity)="data">
-            <b-form-spinbutton id="demo-sb" v-model="data.item.quantity" min="1" max="100" @change="getTotal()"></b-form-spinbutton>
+            <b-form-spinbutton id="demo-sb" v-model="data.item.quantity" min="1" max="100" @change="getTotal(), deleteProduct(data.item)"></b-form-spinbutton>
           </template>
           <template #cell(total_price)="data">
             {{ getTotalPrice(data.item) }} €
           </template>
-          <template #cell(Eliminar)>
-            <b-icon icon="x" class="h3"></b-icon>
+          <template #cell(Eliminar)="data">
+            <b-icon icon="x" class="h3" @click="data.item.quantity = 0, deleteProduct(data.item)"></b-icon>
           </template>
         </b-table>
         <div class="d-flex justify-content-between mt-4">
@@ -101,6 +101,18 @@ export default {
     },
     modalPedido () {
       this.$bvModal.show('realizar-pedido')
+    },
+    deleteProduct (product) {
+      if (this.user_logued !== undefined) {
+        shopServices.delete_product(this.user_logued.email, product)
+          .then(response => {
+            console.log(response)
+          })
+          .catch((error) => {
+            console.error(error)
+          })
+      }
+      this.$store.commit('del_product', product)
     },
     goToRegister () {
       this.$router.push('/register')

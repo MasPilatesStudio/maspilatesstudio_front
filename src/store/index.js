@@ -49,7 +49,7 @@ export default new Vuex.Store({
     del_product (state, product) {
       const products = state.products
       const index = products.indexOf(product)
-      if (index > -1) {
+      if (index > -1 && product.quantity < 1) {
         products.splice(index, 1) // 2nd parameter means remove one item only
       }
       localStorage.removeItem('products')
