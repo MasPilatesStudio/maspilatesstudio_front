@@ -18,7 +18,7 @@
           <template #button-content>
             USUARIO
           </template>
-          <b-dropdown-item to="/profile">PERFIL</b-dropdown-item>
+          <b-dropdown-item to="/profile/0">PERFIL</b-dropdown-item>
           <b-dropdown-item-button @click="logout()">CERRAR SESIÓN</b-dropdown-item-button>
         </b-nav-item-dropdown>
         <b-nav-item class="carrito-item">
@@ -32,7 +32,8 @@
             <b-icon icon="gear-fill" aria-hidden="true"></b-icon>
           </template>
           <b-dropdown-item-button @click="go_to_add_product()">AÑADIR PRODUCTO</b-dropdown-item-button>
-          <b-dropdown-item>Nuevo empleado</b-dropdown-item>
+          <b-dropdown-item-button @click="go_to_orders()">PEDIDOS</b-dropdown-item-button>
+          <b-dropdown-item-button>Nuevo empleado</b-dropdown-item-button>
         </b-nav-item-dropdown>
       </b-navbar-nav>
     </b-collapse>
@@ -59,8 +60,20 @@ export default {
   },
   methods: {
     go_to_add_product () {
-      console.log('Entraa')
-      this.$emit('/profile', this.user)
+      this.$router.push({
+        name: 'Configuration',
+        params: {
+          tabIndex: 1
+        }
+      })
+    },
+    go_to_orders () {
+      this.$router.push({
+        name: 'Configuration',
+        params: {
+          tabIndex: 2
+        }
+      })
     },
 
     logout () {

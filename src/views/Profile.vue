@@ -4,7 +4,7 @@
       <div class="container registro content">
         <b-overlay :show="loading" rounded="sm">
           <b-card :aria-hidden="loading ? 'true' : null" class="card" no-body>
-            <b-tabs card>
+            <b-tabs v-model="tabIndex" card>
               <!-- Perfil -->
               <b-tab title="Perfil" active>
                 <b-card-body class="d-flex align-items-center col-12">
@@ -85,6 +85,45 @@
                   </div>
                 </b-card-text>
               </b-tab>
+              <!-- Pedidos -->
+              <b-tab title="Pedidos">
+                <b-card-text>
+                  <b-table
+                    id="pedidos-table"
+                    responsive
+                    :items="orders"
+                    :per-page="5"
+                    :current-page="currentPage"
+                    :fields="fieldsOrders" >
+                    <template #cell(articles)="data">
+                      {{ data.item.articles }}
+                    </template>
+                    <template #cell(total_price)="data">
+                      {{ data.item.total_price }}€
+                    </template>
+                    <template #cell(id_user)="data" v-if="user_logued.rol === 'Administrator'">
+                      {{ data.item.id_user }}
+                    </template>
+                    <template #cell(direction)="data" v-if="user_logued.rol === 'Administrator'">
+                      {{ data.item.direction }}
+                    </template>
+                    <template #cell(date)="data">
+                      {{ data.item.date }}
+                    </template>
+                    <template #cell(state)="data">
+                      <b-form-select v-if="user_logued.rol === 'Administrator'" v-model="data.item.state" :options="optionsState" @change="changeOrderState(data.item.id, data.item.state)"></b-form-select>
+                      <p v-else>{{ data.item.state }}</p>
+                    </template>
+                  </b-table>
+                  <b-pagination
+                    v-model="currentPage"
+                    class="justify-content-center"
+                    :total-rows="rows"
+                    :per-page="5"
+                    aria-controls="pedidos-table">
+                  </b-pagination>
+                </b-card-text>
+              </b-tab>
             </b-tabs>
           </b-card>
         </b-overlay>
@@ -118,21 +157,61 @@ export default {
         category: 'Categoría',
         brand: 'Marcas'
       },
+      optionsState: [
+        { text: 'ESPERA', value: 'ESPERA' },
+        { text: 'PREPARACIÓN', value: 'PREPARACIÓN' },
+        { text: 'REPARTO', value: 'REPARTO' },
+        { text: 'ENTREGADO', value: 'ENTREGADO' }
+      ],
+      fieldsOrders: [],
+      orders: [],
+      loadingOrders: true,
       categories: [],
       loadingCategories: true,
       brands: [],
       loadingBrands: true,
       nameState: null,
-      loading: false
+      loading: false,
+      currentPage: 1,
+      tabIndex: -1
+    }
+  },
+  watch: {
+    tabIndex: {
+      handler (newValue, oldValue) {
+        console.log(newValue)
+      },
+      deep: true
     }
   },
   computed: {
-    ...mapGetters({ user_logued: 'user_logued' })
+    ...mapGetters({ user_logued: 'user_logued' }),
+    rows () {
+      return this.orders.length
+    }
   },
   created () {
     this.getUser()
     this.get_categories()
     this.get_brands()
+    this.getOrders()
+    if (this.user_logued.rol !== 'Administrator') {
+      this.fieldsOrders = [
+        { key: 'articles', label: 'Productos', tdClass: 'align-middle' },
+        { key: 'total_price', label: 'Precio total', tdClass: 'align-middle' },
+        { key: 'date', label: 'Fecha', tdClass: 'align-middle' },
+        { key: 'state', label: 'Estado', tdClass: 'align-middle' }
+      ]
+    } else {
+      this.fieldsOrders = [
+        { key: 'articles', label: 'Productos', tdClass: 'align-middle' },
+        { key: 'total_price', label: 'Precio total', tdClass: 'align-middle' },
+        { key: 'id_user', label: 'Usuario', tdClass: 'align-middle' },
+        { key: 'direction', label: 'Dirección', tdClass: 'align-middle' },
+        { key: 'date', label: 'Fecha', tdClass: 'align-middle' },
+        { key: 'state', label: 'Estado', tdClass: 'align-middle' }
+      ]
+    }
   },
   methods: {
     getUser () {
@@ -199,6 +278,35 @@ export default {
           this.loading = false
         })
     },
+    getOrders () {
+      shopServices.getOrders(this.user_logued)
+        .then(response => {
+          if (response.orders.length > 0) {
+            this.orders = response.orders
+            this.loadingOrders = false
+          }
+        })
+        .catch((error) => {
+          console.error(error)
+        })
+        .finally(() => {
+          this.checkLoading()
+        })
+    },
+    changeOrderState (orderId, state) {
+      shopServices.changeOrderState(orderId, state)
+        .then(response => {
+
+        })
+        .catch((error) => {
+          this.$bvToast.toast('No se ha podido guardar', {
+            title: 'ERROR',
+            variant: 'danger',
+            solid: true
+          })
+          console.error(error)
+        })
+    },
     get_categories () {
       shopServices.get_categories()
         .then(response => {
@@ -232,16 +340,17 @@ export default {
         })
     },
     checkLoading () {
-      if (!this.loadingBrands && !this.loadingCategories) {
+      if (!this.loadingBrands && !this.loadingCategories && !this.loadingOrders) {
         this.loading = false
       }
+      this.tabIndex = parseInt(this.$route.params.tabIndex)
     }
   }
 }
 </script>
 <style scoped>
   .registro {
-    max-width: 50em;
+    max-width: 60em;
   }
 
 </style>

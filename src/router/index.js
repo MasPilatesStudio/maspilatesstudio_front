@@ -21,8 +21,8 @@ const routes = [
     }
   },
   {
-    path: '/profile',
-    name: 'profile',
+    path: '/profile/:tabIndex',
+    name: 'Configuration',
     components: {
       header: () => import('@/views/Header.vue'),
       default: () => import('@/views/Profile')

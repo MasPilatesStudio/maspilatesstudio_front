@@ -153,6 +153,39 @@ const shopServices = {
           reject(e)
         })
     })
+  },
+  getOrders (user) {
+    return new Promise((resolve, reject) => {
+      services.post({
+        url: apiHostBaseUrl + prefix + '/get_orders',
+        data: {
+          user: user
+        }
+      })
+        .then(response => {
+          resolve(response.data)
+        })
+        .catch(e => {
+          reject(e)
+        })
+    })
+  },
+  changeOrderState (orderId, state) {
+    return new Promise((resolve, reject) => {
+      services.post({
+        url: apiHostBaseUrl + prefix + '/change_order_state',
+        data: {
+          order_id: orderId,
+          state: state
+        }
+      })
+        .then(response => {
+          resolve(response.data)
+        })
+        .catch(e => {
+          reject(e)
+        })
+    })
   }
 }
 export default shopServices

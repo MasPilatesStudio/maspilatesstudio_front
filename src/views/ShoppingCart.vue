@@ -28,7 +28,7 @@
             {{ getTotalPrice(data.item) }} €
           </template>
           <template #cell(Eliminar)="data">
-            <b-icon icon="x" class="h3" @click="data.item.quantity = 0, deleteProduct(data.item)"></b-icon>
+            <b-icon icon="x" class="h3 pointer" @click="data.item.quantity = 0, deleteProduct(data.item)"></b-icon>
           </template>
         </b-table>
         <div class="d-flex justify-content-between mt-4">
