@@ -21,8 +21,24 @@ const routes = [
     }
   },
   {
-    path: '/profile/:tabIndex',
-    name: 'Configuration',
+    path: '/profile',
+    name: 'Profile',
+    components: {
+      header: () => import('@/views/Header.vue'),
+      default: () => import('@/views/Profile')
+    }
+  },
+  {
+    path: '/add_product',
+    name: 'AddProduct',
+    components: {
+      header: () => import('@/views/Header.vue'),
+      default: () => import('@/views/Profile')
+    }
+  },
+  {
+    path: '/orders',
+    name: 'Orders',
     components: {
       header: () => import('@/views/Header.vue'),
       default: () => import('@/views/Profile')

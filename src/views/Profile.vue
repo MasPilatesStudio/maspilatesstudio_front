@@ -177,15 +177,25 @@ export default {
     }
   },
   watch: {
+    tab_index: {
+      handler (newValue, oldValue) {
+        this.tabIndex = this.tab_index
+      },
+      deep: true
+    },
     tabIndex: {
       handler (newValue, oldValue) {
         console.log(newValue)
+        if (this.$route.path !== '/profile' && newValue === 0) this.$router.replace('/profile')
+        if (this.$route.path !== '/add_product' && newValue === 1) this.$router.replace('/add_product')
+        if (this.$route.path !== '/orders' && newValue === 2) this.$router.replace('/orders')
+        this.$store.commit('set_tab_index', newValue)
       },
       deep: true
     }
   },
   computed: {
-    ...mapGetters({ user_logued: 'user_logued' }),
+    ...mapGetters({ user_logued: 'user_logued', tab_index: 'tabIndex' }),
     rows () {
       return this.orders.length
     }
@@ -343,7 +353,6 @@ export default {
       if (!this.loadingBrands && !this.loadingCategories && !this.loadingOrders) {
         this.loading = false
       }
-      this.tabIndex = parseInt(this.$route.params.tabIndex)
     }
   }
 }

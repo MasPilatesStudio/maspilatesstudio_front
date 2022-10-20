@@ -18,7 +18,7 @@
           <template #button-content>
             USUARIO
           </template>
-          <b-dropdown-item to="/profile/0">PERFIL</b-dropdown-item>
+          <b-dropdown-item @click="go_to_profile()">PERFIL</b-dropdown-item>
           <b-dropdown-item-button @click="logout()">CERRAR SESIÓN</b-dropdown-item-button>
         </b-nav-item-dropdown>
         <b-nav-item class="carrito-item">
@@ -52,28 +52,24 @@ export default {
     }
   },
   computed: {
-    ...mapGetters({ user_logued: 'user_logued', store_products: 'products', count: 'countProducts' })
+    ...mapGetters({ user_logued: 'user_logued', store_products: 'products', count: 'countProducts', tab_index: 'tabIndex' })
   },
   created () {
     this.cerrar = document.querySelector('#cerrar')
     this.get_count_products()
   },
   methods: {
+    go_to_profile () {
+      if (this.tab_index !== 0) this.$router.replace('/profile')
+      this.$store.commit('set_tab_index', 0)
+    },
     go_to_add_product () {
-      this.$router.push({
-        name: 'Configuration',
-        params: {
-          tabIndex: 1
-        }
-      })
+      if (this.tab_index !== 1) this.$router.replace('/add_product')
+      this.$store.commit('set_tab_index', 1)
     },
     go_to_orders () {
-      this.$router.push({
-        name: 'Configuration',
-        params: {
-          tabIndex: 2
-        }
-      })
+      if (this.tab_index !== 2) this.$router.replace('/orders')
+      this.$store.commit('set_tab_index', 2)
     },
 
     logout () {

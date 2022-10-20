@@ -9,12 +9,14 @@ export default new Vuex.Store({
     email: '',
     rol: '',
     products: [],
-    countProducts: 0
+    countProducts: 0,
+    tabIndex: 0
   },
   getters: {
     user_logued: state => state.user,
     products: state => state.products,
-    countProducts: state => state.countProducts
+    countProducts: state => state.countProducts,
+    tabIndex: state => state.tabIndex
   },
   mutations: {
     set_user (state, user) {
@@ -62,6 +64,9 @@ export default new Vuex.Store({
     del_count_products (state) {
       state.countProducts = 0
       localStorage.countProducts = JSON.stringify(0)
+    },
+    set_tab_index (state, tabIndex) {
+      state.tabIndex = parseInt(tabIndex)
     }
   },
   actions: {
