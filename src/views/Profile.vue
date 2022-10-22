@@ -49,7 +49,7 @@
                 </b-card-body>
               </b-tab>
               <!-- Productos -->
-              <b-tab title="Productos">
+              <b-tab v-if="user_logued.rol == 'Administrator'" title="Productos">
                 <b-card-text>
                   <div v-if="loading">
                     <b-spinner style="width: 3rem; height: 3rem;" variant="info"></b-spinner>
@@ -173,29 +173,11 @@ export default {
       nameState: null,
       loading: false,
       currentPage: 1,
-      tabIndex: -1
-    }
-  },
-  watch: {
-    tab_index: {
-      handler (newValue, oldValue) {
-        this.tabIndex = this.tab_index
-      },
-      deep: true
-    },
-    tabIndex: {
-      handler (newValue, oldValue) {
-        console.log(newValue)
-        if (this.$route.path !== '/profile' && newValue === 0) this.$router.replace('/profile')
-        if (this.$route.path !== '/add_product' && newValue === 1) this.$router.replace('/add_product')
-        if (this.$route.path !== '/orders' && newValue === 2) this.$router.replace('/orders')
-        this.$store.commit('set_tab_index', newValue)
-      },
-      deep: true
+      tabIndex: 0
     }
   },
   computed: {
-    ...mapGetters({ user_logued: 'user_logued', tab_index: 'tabIndex' }),
+    ...mapGetters({ user_logued: 'user_logued' }),
     rows () {
       return this.orders.length
     }
@@ -237,7 +219,6 @@ export default {
           this.loading = false
         })
     },
-
     checkValues () {
       if (this.user.name == null || this.user.name === '') {
         this.nameState = false

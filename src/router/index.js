@@ -29,16 +29,8 @@ const routes = [
     }
   },
   {
-    path: '/add_product',
-    name: 'AddProduct',
-    components: {
-      header: () => import('@/views/Header.vue'),
-      default: () => import('@/views/Profile')
-    }
-  },
-  {
-    path: '/orders',
-    name: 'Orders',
+    path: '/configuration',
+    name: 'Configuration',
     components: {
       header: () => import('@/views/Header.vue'),
       default: () => import('@/views/Profile')

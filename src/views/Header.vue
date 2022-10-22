@@ -27,14 +27,11 @@
             <b-badge variant="danger" id="cart_menu_num">{{ count }}</b-badge>
           </b-button>
         </b-nav-item>
-        <b-nav-item-dropdown v-show="user_logued">
-          <template #button-content>
+        <b-nav-item>
+          <b-button variant="outline-secondary" class="cart" @click="go_to_profile()">
             <b-icon icon="gear-fill" aria-hidden="true"></b-icon>
-          </template>
-          <b-dropdown-item-button @click="go_to_add_product()">AÑADIR PRODUCTO</b-dropdown-item-button>
-          <b-dropdown-item-button @click="go_to_orders()">PEDIDOS</b-dropdown-item-button>
-          <b-dropdown-item-button>Nuevo empleado</b-dropdown-item-button>
-        </b-nav-item-dropdown>
+          </b-button>
+        </b-nav-item>
       </b-navbar-nav>
     </b-collapse>
   </b-navbar>
@@ -52,7 +49,7 @@ export default {
     }
   },
   computed: {
-    ...mapGetters({ user_logued: 'user_logued', store_products: 'products', count: 'countProducts', tab_index: 'tabIndex' })
+    ...mapGetters({ user_logued: 'user_logued', store_products: 'products', count: 'countProducts' })
   },
   created () {
     this.cerrar = document.querySelector('#cerrar')
@@ -60,23 +57,18 @@ export default {
   },
   methods: {
     go_to_profile () {
-      if (this.tab_index !== 0) this.$router.replace('/profile')
-      this.$store.commit('set_tab_index', 0)
+      if (this.$route.path !== '/profile') this.$router.replace('/profile')
     },
-    go_to_add_product () {
-      if (this.tab_index !== 1) this.$router.replace('/add_product')
-      this.$store.commit('set_tab_index', 1)
+    go_to_confiration () {
+      if (this.$route.path !== '/configuration') this.$router.replace('/configuration')
     },
-    go_to_orders () {
-      if (this.tab_index !== 2) this.$router.replace('/orders')
-      this.$store.commit('set_tab_index', 2)
-    },
-
     logout () {
       userServices.logout()
         .then(response => {
           if (response.response === 'OK') {
             this.$store.commit('del_user')
+            this.$store.commit('del_count_products')
+            this.$store.commit('set_products', [])
             this.$router.push('/')
             this.$router.go(0)
           }
