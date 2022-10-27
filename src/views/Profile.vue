@@ -49,7 +49,7 @@
                 </b-card-body>
               </b-tab>
               <!-- Productos -->
-              <b-tab v-if="user_logued.rol == 'Administrator'" title="Productos">
+              <b-tab v-if="user_logued.rol === 'Administrator' || user_logued.rol === 'Employee'" title="Productos">
                 <b-card-text>
                   <div v-if="loading">
                     <b-spinner style="width: 3rem; height: 3rem;" variant="info"></b-spinner>
@@ -94,24 +94,26 @@
                     :items="orders"
                     :per-page="5"
                     :current-page="currentPage"
-                    :fields="fieldsOrders" >
+                    :fields="fieldsOrders"
+                    show-empty
+                    :empty-text="'No se han realizado pedidos'" >
                     <template #cell(articles)="data">
                       {{ data.item.articles }}
                     </template>
                     <template #cell(total_price)="data">
                       {{ data.item.total_price }}€
                     </template>
-                    <template #cell(id_user)="data" v-if="user_logued.rol === 'Administrator'">
+                    <template #cell(id_user)="data" v-if="user_logued.rol === 'Administrator' || user_logued.rol === 'Employee'">
                       {{ data.item.id_user }}
                     </template>
-                    <template #cell(direction)="data" v-if="user_logued.rol === 'Administrator'">
+                    <template #cell(direction)="data" v-if="user_logued.rol === 'Administrator' || user_logued.rol === 'Employee'">
                       {{ data.item.direction }}
                     </template>
                     <template #cell(date)="data">
                       {{ data.item.date }}
                     </template>
                     <template #cell(state)="data">
-                      <b-form-select v-if="user_logued.rol === 'Administrator'" v-model="data.item.state" :options="optionsState" @change="changeOrderState(data.item.id, data.item.state)"></b-form-select>
+                      <b-form-select v-if="user_logued.rol === 'Administrator' || user_logued.rol === 'Employee'" v-model="data.item.state" :options="optionsState" @change="changeOrderState(data.item.id, data.item.state)"></b-form-select>
                       <p v-else>{{ data.item.state }}</p>
                     </template>
                   </b-table>
@@ -122,6 +124,72 @@
                     :per-page="5"
                     aria-controls="pedidos-table">
                   </b-pagination>
+                </b-card-text>
+              </b-tab>
+              <!-- Añadir empleado -->
+              <b-tab v-if="user_logued.rol == 'Administrator'" title="Empleado">
+                <b-card-text>
+                  <div>
+                    <b-form-input
+                      v-model="employee.email"
+                      type="email"
+                      placeholder="Email*"
+                      :state="emailState"
+                      @change="emailState = null" />
+                    <b-form-input
+                      v-model="employee.name"
+                      class="mt-2"
+                      type="text"
+                      placeholder="Nombre*"
+                      :state="nameEmployeeState"
+                      @change="nameEmployeeState = null" />
+                    <b-form-input
+                      v-model="employee.password"
+                      class="mt-2"
+                      type="password"
+                      placeholder="Contraseña*"
+                      :state="passwordState"
+                      @change="passwordState = null" />
+                    <b-form-input
+                      v-model="employee.province"
+                      class="mt-2"
+                      type="text"
+                      placeholder="Provincia*"
+                      :state="provinceState"
+                      @change="provinceState = null" />
+                    <b-form-input
+                      v-model="employee.direction"
+                      class="mt-2"
+                      type="text"
+                      placeholder="Dirección*"
+                      :state="directionState"
+                      @change="directionState = null" />
+                    <b-form-input
+                      v-model="employee.cp"
+                      class="mt-2"
+                      type="number"
+                      placeholder="Código Postal*"
+                      :state="cpState"
+                      @change="cpState = null" />
+                    <b-form-input
+                      v-model="employee.phone"
+                      class="mt-2"
+                      type="number"
+                      placeholder="Teléfono*"
+                      :state="phoneState"
+                      @change="phoneState = null" />
+                    <b-alert
+                      class="m-2"
+                      variant="danger"
+                      fade
+                      dismissible
+                      :show="showError">
+                    {{ error }}
+                 </b-alert>
+                    <b-button :disabled="loading" @click="add_employee()" class="mt-3 primary-button">
+                      Guardar
+                    </b-button>
+                  </div>
                 </b-card-text>
               </b-tab>
             </b-tabs>
@@ -149,6 +217,27 @@ export default {
         cp: '',
         phone: ''
       },
+      nameState: null,
+      employee: {
+        email: '',
+        name: '',
+        password: '',
+        province: '',
+        direction: '',
+        cp: '',
+        phone: '',
+        rol: 'Employee'
+      },
+      // State employee
+      emailState: null,
+      nameEmployeeState: null,
+      passwordState: null,
+      provinceState: null,
+      directionState: null,
+      cpState: null,
+      phoneState: null,
+      error: '',
+      showError: false,
       product: {
         name: '',
         description: '',
@@ -170,7 +259,6 @@ export default {
       loadingCategories: true,
       brands: [],
       loadingBrands: true,
-      nameState: null,
       loading: false,
       currentPage: 1,
       tabIndex: 0
@@ -187,7 +275,7 @@ export default {
     this.get_categories()
     this.get_brands()
     this.getOrders()
-    if (this.user_logued.rol !== 'Administrator') {
+    if (this.user_logued.rol !== 'Administrator' && this.user_logued.rol !== 'Employee') {
       this.fieldsOrders = [
         { key: 'articles', label: 'Productos', tdClass: 'align-middle' },
         { key: 'total_price', label: 'Precio total', tdClass: 'align-middle' },
@@ -272,7 +360,7 @@ export default {
     getOrders () {
       shopServices.getOrders(this.user_logued)
         .then(response => {
-          if (response.orders.length > 0) {
+          if (response.orders !== 'No hay registros') {
             this.orders = response.orders
             this.loadingOrders = false
           }
@@ -297,6 +385,50 @@ export default {
           })
           console.error(error)
         })
+    },
+    add_employee () {
+      this.showError = false
+      if (this.employee.email == null || this.employee.email === '' ||
+          this.employee.name == null || this.employee.name === '' ||
+          this.employee.password == null || this.employee.password === '' ||
+          this.employee.province == null || this.employee.province === '' ||
+          this.employee.direction == null || this.employee.direction === '' ||
+          this.employee.cp == null || this.employee.cp === '' ||
+          this.employee.phone == null || this.employee.phone === '') {
+        // Cambiar el state si está vacio
+        this.emailState = this.employee.email === '' ? false : null
+        this.nameEmployeeState = this.employee.name === '' ? false : null
+        this.passwordState = this.employee.password === '' ? false : null
+        this.provinceState = this.employee.province === '' ? false : null
+        this.directionState = this.employee.direction === '' ? false : null
+        this.cpState = this.employee.cp === '' ? false : null
+        this.phoneState = this.employee.phone === '' ? false : null
+      } else {
+        userServices.add_employee(this.employee)
+          .then(response => {
+            if (response.message !== 'OK') {
+              this.showError = true
+              this.error = response.message
+            } else {
+              this.$bvToast.toast('Empleado guardado correctamente', {
+                title: 'ÉXITO',
+                variant: 'success',
+                solid: true
+              })
+            }
+          })
+          .catch((error) => {
+            this.$bvToast.toast('No se ha podido guardar', {
+              title: 'ERROR',
+              variant: 'danger',
+              solid: true
+            })
+            console.error(error)
+          })
+          .finally(() => {
+            this.loading = false
+          })
+      }
     },
     get_categories () {
       shopServices.get_categories()

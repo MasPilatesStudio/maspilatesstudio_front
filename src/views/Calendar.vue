@@ -57,7 +57,7 @@
         <p>{{ selectedEvent.people }}/20 participantes</p>
         <span
           class="col-12"
-          v-if="user_logued.rol == 'Administrator' && selectedEvent.users">
+          v-if="user_logued.rol == 'Administrator' && selectedEvent.users || user_logued.rol == 'Employee' && selectedEvent.users">
           <p class="font-weight-bold">Lista de reservas</p>
           <div class="d-flex flex-wrap col-12">
             <p class="pl-2 col-4" v-for="user in selectedEvent.users" :key="user">
@@ -159,7 +159,7 @@ export default {
     },
     getHour () {
       this.hour = constants.weekdays[this.selectedEvent.day] + ' ' +
-        this.selectedEvent.start.getDay() + ', ' + utils.getDatestrHours(this.selectedEvent.start) + ' - ' +
+        this.selectedEvent.start.getDate() + ', ' + utils.getDatestrHours(this.selectedEvent.start) + ' - ' +
         utils.getDatestrHours(this.selectedEvent.end)
     },
     showEvent ({ event }) {
@@ -171,10 +171,10 @@ export default {
     get_books () {
       calendarServices.get_books(this.user_logued.email)
         .then(response => {
-          if (response.Items.length > 0) {
+          if (response.Items !== 'No hay registros') {
             this.books = response.Items
-            this.loadingBooks = false
           }
+          this.loadingBooks = false
         })
         .catch((error) => {
           console.error(error)
@@ -260,16 +260,18 @@ export default {
         })
     },
     checkIsBooked () {
-      if (this.events.length > 0 && this.books.length > 0) {
+      if (this.events.length > 0) {
         this.events.forEach(element => {
           element.people = 0
-          this.books.forEach(item => {
-            const aux = new Date(item.start_date)
-            aux.setHours(aux.getHours() - 2)
-            if (utils.getDateStrBooks(new Date(element.start)) === utils.getDateStrBooks(aux)) {
-              element.name += ' - RESERVADO'
-            }
-          })
+          if (this.books.length > 0) {
+            this.books.forEach(item => {
+              const aux = new Date(item.start_date)
+              aux.setHours(aux.getHours() - 2)
+              if (utils.getDateStrBooks(new Date(element.start)) === utils.getDateStrBooks(aux)) {
+                element.name += ' - RESERVADO'
+              }
+            })
+          }
           this.people_per_class.forEach(row => {
             if (utils.getDateStrBooks(new Date(element.start)) === row.start_date) {
               element.people = row.count

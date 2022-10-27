@@ -20,6 +20,22 @@ const dataServices = {
         })
     })
   },
+  add_employee (employee) {
+    return new Promise((resolve, reject) => {
+      services.post({
+        url: apiHostBaseUrl + prefix + '/add_employee',
+        data: {
+          employee: employee
+        }
+      })
+        .then(response => {
+          resolve(response.data)
+        })
+        .catch(e => {
+          reject(e)
+        })
+    })
+  },
   update_send_direction (user) {
     return new Promise((resolve, reject) => {
       services.post({

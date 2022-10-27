@@ -28,7 +28,7 @@
           </b-button>
         </b-nav-item>
         <b-nav-item>
-          <b-button variant="outline-secondary" class="cart" @click="go_to_profile()">
+          <b-button v-show="user_logued" variant="outline-secondary" class="cart" @click="go_to_profile()">
             <b-icon icon="gear-fill" aria-hidden="true"></b-icon>
           </b-button>
         </b-nav-item>
@@ -69,7 +69,7 @@ export default {
             this.$store.commit('del_user')
             this.$store.commit('del_count_products')
             this.$store.commit('set_products', [])
-            this.$router.push('/')
+            this.$router.replace('/')
             this.$router.go(0)
           }
         })
