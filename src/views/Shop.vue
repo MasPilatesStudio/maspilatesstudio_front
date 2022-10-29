@@ -161,7 +161,7 @@
             v-for="product in products" :key="product.id"
             class="product-card mt-2">
             <div class="product-tumb">
-              <img :src="getImgUrl(product)" alt="">
+              <img :src="product.imgUrl" alt="">
             </div>
             <div class="product-details">
               <span class="product-catagory">{{ product.category }}</span>
@@ -194,6 +194,8 @@
 import shopServices from '@/services/shopServices.js'
 import { mapGetters } from 'vuex'
 import Footer from './Footer.vue'
+import { ref, getDownloadURL } from 'firebase/storage'
+import storage from '@/firebase.js'
 
 export default {
   name: 'ShopPage',
@@ -202,7 +204,7 @@ export default {
   },
   data () {
     return {
-      perPage: 3,
+      perPage: 4,
       currentPage: 1,
       count: 0,
       slide: 0,
@@ -251,9 +253,6 @@ export default {
     onSlideEnd (slide) {
       this.sliding = false
     },
-    getImgUrl (product) {
-      return require('@/assets/shop/' + product.image)
-    },
     addToShoppingCart (product) {
       if (this.user_logued !== undefined) {
         this.addToShoppingCartLogued(product)
@@ -298,14 +297,23 @@ export default {
             this.products = []
           } else if (response.Items.length > 0) {
             this.products = response.Items
-            this.loadingProducts = false
+            this.products.forEach(element => {
+              const listRef = ref(storage, 'imagenes/' + element.image)
+              getDownloadURL(listRef)
+                .then((res) => {
+                  element.imgUrl = res
+                  if (this.products[this.products.length - 1].id === element.id) {
+                    this.loadingProducts = false
+                    this.checkLoading()
+                  }
+                }).catch()
+            })
           }
         })
         .catch((error) => {
           console.error(error)
         })
         .finally(() => {
-          this.checkLoading()
         })
     },
     get_count_products () {

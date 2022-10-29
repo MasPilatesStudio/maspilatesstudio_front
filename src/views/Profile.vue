@@ -69,6 +69,13 @@
                       class="mt-2"
                       type="text"
                       placeholder="Precio" />
+                    <b-form-file
+                      v-model="product.file"
+                      class="mt-2"
+                      :state="fileState"
+                      placeholder="Choose a file or drop it here..."
+                      drop-placeholder="Drop file here...">
+                    </b-form-file>
                     <b-form-select
                       v-model="product.category"
                       :options="categories"
@@ -204,6 +211,8 @@
 import { mapGetters } from 'vuex'
 import userServices from '@/services/userServices.js'
 import shopServices from '@/services/shopServices.js'
+import storage from '@/firebase.js'
+import { ref, uploadBytes } from 'firebase/storage'
 
 export default {
   name: 'RegisterUser',
@@ -241,11 +250,12 @@ export default {
       product: {
         name: '',
         description: '',
-        image: '',
+        file: null,
         price: '',
         category: 'Categoría',
         brand: 'Marcas'
       },
+      fileState: null,
       optionsState: [
         { text: 'ESPERA', value: 'ESPERA' },
         { text: 'PREPARACIÓN', value: 'PREPARACIÓN' },
@@ -340,16 +350,38 @@ export default {
       this.loading = true
       shopServices.add_product(this.product)
         .then(response => {
-          if (response.response === 'OK') {
+          if (response.message !== null) {
+            const refImg = ref(storage, 'imagenes/' + response.message + '.png')
+            const metadata = { contentType: 'img/png' }
+            uploadBytes(refImg, this.product.file, metadata)
+            this.product = {
+              name: '',
+              description: '',
+              file: null,
+              price: '',
+              category: 'Categoría',
+              brand: 'Marcas'
+            }
             this.$bvToast.toast('Operación realizada con éxito', {
               title: 'Información',
               variant: 'success',
               solid: true
             })
             this.loading = false
+          } else {
+            this.$bvToast.toast('No se ha podido guardar', {
+              title: 'ERROR',
+              variant: 'danger',
+              solid: true
+            })
           }
         })
         .catch((error) => {
+          this.$bvToast.toast('No se ha podido guardar', {
+            title: 'ERROR',
+            variant: 'danger',
+            solid: true
+          })
           console.error(error)
           this.loading = false
         })

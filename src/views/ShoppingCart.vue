@@ -15,7 +15,7 @@
           :items="products"
           :fields="fields" >
           <template #cell(Producto)="data">
-            <img :src="getImgUrl(data.item)" class="image_shopping_cart" alt="">
+            <img :src="data.item.imgUrl" class="image_shopping_cart" alt="">
             {{ data.item.name }}
           </template>
           <template #cell(price)="data">
@@ -48,6 +48,8 @@
 import shopServices from '@/services/shopServices.js'
 import { mapGetters } from 'vuex'
 import ModalPedido from '@/components/Pedido.vue'
+import { ref, getDownloadURL } from 'firebase/storage'
+import storage from '@/firebase.js'
 
 export default {
   name: 'HomeMessage',
@@ -82,9 +84,9 @@ export default {
     }
   },
   methods: {
-    getImgUrl (product) {
-      return require('@/assets/shop/' + product.image)
-    },
+    // getImgUrl (product) {
+    //   return require('@/assets/shop/' + product.image)
+    // },
     getTotalPrice (data) {
       const num = data.price * data.quantity
       return num.toFixed(2)
@@ -125,8 +127,18 @@ export default {
             this.loadingProducts = false
           } else if (response.Items.length > 0) {
             this.products = response.Items
+            this.products.forEach(element => {
+              const listRef = ref(storage, 'imagenes/' + element.image)
+              getDownloadURL(listRef)
+                .then((res) => {
+                  element.imgUrl = res
+                  if (this.products[this.products.length - 1].id === element.id) {
+                    this.loadingProducts = false
+                    this.checkLoading()
+                  }
+                }).catch()
+            })
             this.getTotal()
-            this.loadingProducts = false
           }
         })
         .catch((error) => {
