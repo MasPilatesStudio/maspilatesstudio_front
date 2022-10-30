@@ -15,7 +15,7 @@
           :items="products"
           :fields="fields" >
           <template #cell(Producto)="data">
-            <img :src="data.item.imgUrl" class="image_shopping_cart" alt="">
+            <img :src="data.item.imgUrl" class="image_shopping_cart mr-3" alt="">
             {{ data.item.name }}
           </template>
           <template #cell(price)="data">
