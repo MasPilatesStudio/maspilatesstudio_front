@@ -69,7 +69,7 @@ export default {
             this.$store.commit('del_user')
             this.$store.commit('del_count_products')
             this.$store.commit('set_products', [])
-            this.$router.replace('/')
+            this.$router.push('/')
             this.$router.go(0)
           }
         })

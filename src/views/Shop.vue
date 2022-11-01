@@ -171,6 +171,8 @@
                 <div class="product-price">{{ product.price }}€</div>
                 <div class="product-links">
                   <b-icon icon="cart-fill" aria-hidden="true" @click="addToShoppingCart(product)"></b-icon>
+                  <b-icon v-if="product.xti_activo === 'S' && canDisable" icon="trash-fill" aria-hidden="true" @click="disabledProduct(product.id, 'N')"></b-icon>
+                  <b-icon v-if="product.xti_activo === 'N' && canDisable" icon="arrow-clockwise" aria-hidden="true" @click="disabledProduct(product.id, 'S')"></b-icon>
                 </div>
               </div>
             </div>
@@ -238,10 +240,17 @@ export default {
     },
     rows () {
       return this.count
+    },
+    canDisable () {
+      if (this.user_logued !== undefined) {
+        if (this.user_logued.rol !== 'Client') {
+          return true
+        }
+      }
+      return false
     }
   },
   mounted () {
-    this.get_count_products()
     this.get_products()
     this.get_categories()
     this.get_brands()
@@ -265,6 +274,23 @@ export default {
         })
       }
       this.$store.commit('set_count_products', parseInt(this.countProducts) + 1)
+    },
+    disabledProduct (productId, xtiActivo) {
+      shopServices.disabledProduct(productId, xtiActivo)
+        .then(response => {
+          if (response.product !== 'OK') {
+            const message = xtiActivo === 'S' ? 'Producto habilitado' : 'Producto deshabilitado'
+            this.$bvToast.toast(message, {
+              title: 'Éxito',
+              variant: 'success',
+              solid: true
+            })
+            this.get_products()
+          }
+        })
+        .catch((error) => {
+          console.error(error)
+        })
     },
     addToShoppingCartLogued (product) {
       shopServices.add_to_shopping_cart(product.id, this.user_logued.email)
@@ -291,7 +317,7 @@ export default {
         })
     },
     get_products () {
-      shopServices.get_products(this.filters, this.currentPage, this.perPage)
+      shopServices.get_products(this.filters, this.currentPage, this.perPage, this.user_logued)
         .then(response => {
           if (response.Items === 'No hay registros') {
             this.products = []
@@ -314,10 +340,11 @@ export default {
           console.error(error)
         })
         .finally(() => {
+          this.get_count_products(this.filters, this.user_logued)
         })
     },
-    get_count_products () {
-      shopServices.get_count_products()
+    get_count_products (filters, userLogued) {
+      shopServices.get_count_products(filters, userLogued)
         .then(response => {
           this.count = response.Items
           this.loadingCount = false

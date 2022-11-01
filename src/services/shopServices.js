@@ -4,14 +4,15 @@ const prefix = 'shop'
 
 const shopServices = {
 
-  get_products (filters, currentPage, perPage) {
+  get_products (filters, currentPage, perPage, userLogued) {
     return new Promise((resolve, reject) => {
       services.post({
         url: apiHostBaseUrl + prefix + '/get_products',
         data: {
           filters,
           currentPage,
-          perPage
+          perPage,
+          userLogued
         }
       })
         .then(response => {
@@ -22,10 +23,14 @@ const shopServices = {
         })
     })
   },
-  get_count_products () {
+  get_count_products (filters, userLogued) {
     return new Promise((resolve, reject) => {
-      services.get({
-        path: apiHostBaseUrl + prefix + '/get_count_products'
+      services.post({
+        url: apiHostBaseUrl + prefix + '/get_count_products',
+        data: {
+          filters,
+          userLogued
+        }
       })
         .then(response => {
           resolve(response.data)
@@ -144,6 +149,23 @@ const shopServices = {
         data: {
           products: products,
           email: email
+        }
+      })
+        .then(response => {
+          resolve(response.data)
+        })
+        .catch(e => {
+          reject(e)
+        })
+    })
+  },
+  disabledProduct (productId, xtiActivo) {
+    return new Promise((resolve, reject) => {
+      services.post({
+        url: apiHostBaseUrl + prefix + '/disabled_product',
+        data: {
+          product_id: productId,
+          xti_activo: xtiActivo
         }
       })
         .then(response => {
