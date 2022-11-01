@@ -68,7 +68,7 @@
       </template>
 
       <template #modal-footer="{ cancel }">
-        <b-button size="sm" variant="info" @click="book_class()" :disabled="selectedEvent.name.includes('RESERVADO') || selectedEvent.people >= 20">
+        <b-button size="sm" variant="info" @click="book_class()" :disabled="selectedEvent.name.includes('RESERVADO') || selectedEvent.people >= 20 || !paid_fee || !is_in_range_paid">
           RESERVAR
         </b-button>
         <b-button size="sm" variant="outline-danger" @click="cancel()">
@@ -82,6 +82,7 @@
 
 <script>
 import calendarServices from '@/services/calendarServices.js'
+import userServices from '@/services/userServices.js'
 import constants from '@/utils/constants.js'
 import utils from '@/utils/utils.js'
 import Footer from './Footer.vue'
@@ -98,6 +99,8 @@ export default {
     loadingBooks: true,
     loadingPeople: true,
     loadingPeopleBooked: true,
+    loadingUser: true,
+    user: null,
     mode: 'stack',
     selected: 'week',
     focus: '',
@@ -134,13 +137,51 @@ export default {
     this.get_books()
     this.get_people_per_class()
     this.get_people_booked()
+    this.getUser()
   },
   created () {
   },
   computed: {
-    ...mapGetters({ user_logued: 'user_logued' })
+    ...mapGetters({ user_logued: 'user_logued' }),
+    paid_fee () {
+      const today = new Date()
+      const aux = new Date(this.user.pay_date)
+      const sol = today - aux
+      const days = sol / 1000 / 60 / 60 / 24
+      if (Math.round(days) <= 30) {
+        return true
+      } else {
+        return false
+      }
+    },
+    is_in_range_paid () {
+      const today = new Date()
+      const paid = new Date(this.user.pay_date)
+      paid.setDate(paid.getDate() + 31)
+      const aux = new Date(this.selectedEvent.start)
+      console.log(paid)
+      console.log(aux)
+      if (paid >= aux && aux >= today) {
+        return true
+      }
+      return false
+    }
   },
   methods: {
+    getUser () {
+      userServices.get_user(this.user_logued.email)
+        .then(response => {
+          this.user = response.response
+          this.loadingUser = false
+        })
+        .catch((error) => {
+          console.error(error)
+          this.loadingUser = false
+        })
+        .finally(() => {
+          this.checkLoading()
+        })
+    },
     viewDay ({ date }) {
       this.focus = date
       this.type = 'day'
@@ -229,7 +270,7 @@ export default {
         })
     },
     checkLoading () {
-      if (!this.loadingSchedule && !this.loadingBooks && !this.loadingPeople && !this.loadingPeopleBooked) {
+      if (!this.loadingSchedule && !this.loadingBooks && !this.loadingPeople && !this.loadingPeopleBooked && !this.loadingUser) {
         this.loading = false
       }
     },
@@ -266,7 +307,7 @@ export default {
           if (this.books.length > 0) {
             this.books.forEach(item => {
               const aux = new Date(item.start_date)
-              aux.setHours(aux.getHours() - 2)
+              aux.setHours(aux.getHours() - 1)
               if (utils.getDateStrBooks(new Date(element.start)) === utils.getDateStrBooks(aux)) {
                 element.name += ' - RESERVADO'
               }

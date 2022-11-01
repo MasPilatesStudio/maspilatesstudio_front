@@ -38,6 +38,21 @@
         </div>
       </div>
     </div>
+
+    <div id="paid-page" class="d-flex justify-content-center align-items-center">
+      <div class="card">
+        <h1>35€</h1>
+        <img src="../assets/undraw_personal_trainer_re_cnua.svg" alt="logo" class="payment_image" />
+        <ul class="text-align-left mt-4">
+          <li>Clases dirigidas</li>
+          <li>Clases adaptadas a las capacidades</li>
+          <li>Clases con los mejores materiales</li>
+          <li>Mejora tu flexibilidad, fuerza y equilibrio</li>
+        </ul>
+        <b-button class="button mt-4" @click="pay_monthly_fee()">Pagar mensualidad</b-button>
+      </div>
+    </div>
+
     <div id="schedule" class="p-3 p-md-5">
       <div class="row">
         <div class="col-lg">
@@ -93,6 +108,7 @@
 
 <script>
 import userServices from '@/services/userServices.js'
+import shopServices from '@/services/shopServices.js'
 import { mapGetters } from 'vuex'
 import Footer from './Footer.vue'
 export default {
@@ -143,6 +159,21 @@ export default {
         return false
       } else return true
     },
+    pay_monthly_fee () {
+      if (!this.user_logued) {
+        this.$router.push('/register')
+      } else {
+        shopServices.pay_monthly_fee(this.user_logued.email)
+          .then(response => {
+            const a = document.createElement('a')
+            a.href = response.response
+            a.click()
+          })
+          .catch((error) => {
+            console.error(error)
+          })
+      }
+    },
     login () {
       this.loading = true
       userServices.login(this.user)
@@ -176,6 +207,44 @@ export default {
     -o-background-size: cover;
     background-size: cover;
   }
+
+  #paid-page {
+    background-color: $third-color;
+    height: 87vh ;
+  }
+
+  .card {
+    border-radius: 25px;
+    width: 30em;
+    box-shadow: rgba(0, 0, 0, 0.19) 0px 10px 20px, rgba(0, 0, 0, 0.23) 0px 6px 6px;
+    background: #fff;
+    padding: 20px;
+    align-items: center;
+  }
+
+  @media(max-width: 850px) {
+    .card {
+      width: 30em;
+    }
+  }
+
+  @media(max-width: 720px) {
+    .card {
+      width: 20em;
+    }
+  }
+
+  ul {
+    list-style: none;
+  }
+  ul li {
+    font-weight: 600;
+  }
+
+  .payment_image {
+    width: 150px;
+    height: 150px;
+  }
   #about {
     min-height: 40vh;
   }
@@ -185,12 +254,5 @@ export default {
   #contact {
     background-color: $third-color;
   }
-
-/*
-@media(max-width: 850px) {
-  .img-landing {
-    height: 40% !important;
-  }
-} */
 
 </style>

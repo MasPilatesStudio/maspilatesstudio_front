@@ -186,6 +186,22 @@ const shopServices = {
           reject(e)
         })
     })
+  },
+  pay_monthly_fee (email) {
+    return new Promise((resolve, reject) => {
+      services.post({
+        url: apiHostBaseUrl + prefix + '/pay_monthly_fee',
+        data: {
+          email: email
+        }
+      })
+        .then(response => {
+          resolve(response.data)
+        })
+        .catch(e => {
+          reject(e)
+        })
+    })
   }
 }
 export default shopServices
