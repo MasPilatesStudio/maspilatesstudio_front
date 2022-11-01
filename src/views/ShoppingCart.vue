@@ -31,11 +31,11 @@
             <b-icon icon="x" class="h3 pointer" @click="data.item.quantity = 0, deleteProduct(data.item)"></b-icon>
           </template>
         </b-table>
-        <div class="d-flex justify-content-between mt-4">
-          <h5><router-link class="link-black" to="/shop">Seguir comprando</router-link></h5>
-          <div>
-            <h4>Total: {{ total.toFixed(2) }}</h4>
-            <b-button size="lg" class="mt-4" variant="info" @click="user_logued === undefined ? goToRegister() : modalPedido()">Procesar pedido</b-button>
+        <div>
+          <h4 id="align">Total: {{ total.toFixed(2) }}</h4>
+          <div class="d-flex justify-content-between mt-4 align-items-center">
+            <h5><router-link class="link-black" to="/shop">Seguir comprando</router-link></h5>
+            <b-button size="lg" variant="info" @click="user_logued === undefined ? goToRegister() : modalPedido()">Procesar pedido</b-button>
           </div>
         </div>
       </div>
@@ -161,5 +161,8 @@ export default {
   height: 80px;
   width: 80px;
   object-fit: contain;
+}
+#align {
+  text-align: right;
 }
 </style>

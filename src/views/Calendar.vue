@@ -159,8 +159,6 @@ export default {
       const paid = new Date(this.user.pay_date)
       paid.setDate(paid.getDate() + 31)
       const aux = new Date(this.selectedEvent.start)
-      console.log(paid)
-      console.log(aux)
       if (paid >= aux && aux >= today) {
         return true
       }
