@@ -165,7 +165,7 @@
             </div>
             <div class="product-details">
               <span class="product-catagory">{{ product.category }}</span>
-              <h4><a href="">{{ product.name }}</a></h4>
+              <h4><a>{{ product.name }}</a></h4>
               <p>{{ product.description }}</p>
               <div class="product-bottom-details pt-2">
                 <div class="product-price">{{ product.price }}€</div>
