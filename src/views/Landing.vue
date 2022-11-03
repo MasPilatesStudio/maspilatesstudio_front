@@ -204,23 +204,31 @@ export default {
     },
     login () {
       this.loading = true
-      userServices.login(this.user)
-        .then(response => {
-          if (response.response === 'Incorrect password' || response.response === 'Invalid credentials') {
-            this.showError = true
-            this.error = response.response
-          } else {
-            this.$store.commit('set_user', response.response)
-            this.show_login = false
-            this.$router.go(0)
-          }
+      if (this.user.email !== '' && this.user.password !== '') {
+        userServices.login(this.user)
+          .then(response => {
+            if (response.response === 'Incorrect password' || response.response === 'Invalid credentials') {
+              this.showError = true
+              this.error = response.response
+            } else {
+              this.$store.commit('set_user', response.response)
+              this.show_login = false
+              this.$router.go(0)
+            }
+          })
+          .catch((error) => {
+            console.error(error)
+          })
+          .finally(() => {
+            this.loading = false
+          })
+      } else {
+        this.$bvToast.toast('Debe rellenar el email y la contraseña', {
+          title: 'Información',
+          variant: 'info',
+          solid: true
         })
-        .catch((error) => {
-          console.error(error)
-        })
-        .finally(() => {
-          this.loading = false
-        })
+      }
     }
   }
 }

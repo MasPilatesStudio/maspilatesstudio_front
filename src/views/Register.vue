@@ -85,12 +85,15 @@ export default {
   methods: {
     checkValues () {
       this.showError = false
+      const expr = /^([a-zA-Z0-9_.-])+@(([a-zA-Z0-9-])+\.)+([a-zA-Z0-9]{2,4})+$/
+
       if (this.user.email == null || this.user.email === '' ||
           this.user.name == null || this.user.name === '' ||
           this.user.password == null || this.user.password === '' ||
           this.user.passwordCheck == null || this.user.passwordCheck === '' ||
-          this.user.password !== this.user.passwordCheck) {
-        if (this.user.email == null || this.user.email === '') {
+          this.user.password !== this.user.passwordCheck ||
+          !expr.test(this.user.email)) {
+        if (this.user.email == null || this.user.email === '' || !expr.test(this.user.email)) {
           this.emailState = false
         }
         if (this.user.name == null || this.user.name === '') {
@@ -106,6 +109,9 @@ export default {
           this.passwordCheckState = false
           this.passwordState = false
           this.error = 'Las contraseñas no coinciden'
+          this.showError = true
+        } else if (!expr.test(this.user.email)) {
+          this.error = 'El email no tiene el formato correcto'
           this.showError = true
         } else {
           this.error = 'Todos los campos son obligatorios'
