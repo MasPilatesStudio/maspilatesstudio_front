@@ -124,7 +124,14 @@
               placeholder="Enter Your Password">
             </b-form-input>
           </b-form>
-            <p v-if="show_error">{{ error }}</p>
+            <b-alert
+              class="mt-2"
+              variant="danger"
+              fade
+              dismissible
+              :show="show_error">
+              {{ error }}
+            </b-alert>
             <p class="pt-2">¿Aún no estás registrado? <router-link class="link-black" to="/register"> Crear cuenta </router-link></p>
             <b-button class="secondary-button" @click="login()" >Iniciar sesión</b-button>
         </div>
@@ -208,7 +215,7 @@ export default {
         userServices.login(this.user)
           .then(response => {
             if (response.response === 'Incorrect password' || response.response === 'Invalid credentials') {
-              this.showError = true
+              this.show_error = true
               this.error = response.response
             } else {
               this.$store.commit('set_user', response.response)
