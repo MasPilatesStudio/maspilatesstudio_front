@@ -22,13 +22,13 @@
             {{ data.item.price }}€
           </template>
           <template #cell(quantity)="data">
-            <b-form-spinbutton id="demo-sb" v-model="data.item.quantity" min="1" max="100" @change="getTotal(), deleteProduct(data.item)"></b-form-spinbutton>
+            <b-form-spinbutton id="demo-sb" v-model="data.item.quantity" min="1" max="100" @change="deleteProduct(data.item), getTotal()"></b-form-spinbutton>
           </template>
           <template #cell(total_price)="data">
             {{ getTotalPrice(data.item) }} €
           </template>
           <template #cell(Eliminar)="data">
-            <b-icon icon="x" class="h3 pointer" @click="data.item.quantity = 0, deleteProduct(data.item)"></b-icon>
+            <b-icon icon="x" class="h3 pointer" @click="data.item.quantity = 0, deleteProduct(data.item), getTotal()"></b-icon>
           </template>
         </b-table>
         <div>

@@ -51,24 +51,21 @@
               <!-- Productos -->
               <b-tab v-if="user_logued.rol === 'Administrator' || user_logued.rol === 'Employee'" title="Productos">
                 <b-card-text>
-                  <div v-if="loading">
-                    <b-spinner style="width: 3rem; height: 3rem;" variant="info"></b-spinner>
-                  </div>
-                  <div v-else>
+                  <div>
                     <b-form-input
                       v-model="product.name"
                       class="mt-2"
                       type="text"
-                      placeholder="Nombre" />
+                      placeholder="Nombre*" />
                     <b-form-textarea
                       v-model="product.description"
-                      placeholder="Descripción"
+                      placeholder="Descripción*"
                       class="mt-2" />
                     <b-form-input
                       v-model="product.price"
                       class="mt-2"
-                      type="text"
-                      placeholder="Precio" />
+                      type="number"
+                      placeholder="Precio*" />
                     <b-form-file
                       v-model="product.file"
                       class="mt-2"
@@ -191,8 +188,8 @@
                       fade
                       dismissible
                       :show="showError">
-                    {{ error }}
-                 </b-alert>
+                      {{ error }}
+                    </b-alert>
                     <b-button :disabled="loading" @click="add_employee()" class="mt-3 primary-button">
                       Guardar
                     </b-button>
@@ -252,8 +249,8 @@ export default {
         description: '',
         file: null,
         price: '',
-        category: 'Categoría',
-        brand: 'Marcas'
+        category: 'Categoría*',
+        brand: 'Marcas*'
       },
       fileState: null,
       optionsState: [
@@ -347,47 +344,62 @@ export default {
         })
     },
     add_product () {
-      this.loading = true
-      shopServices.add_product(this.product)
-        .then(response => {
-          if (response.message !== null) {
-            const refImg = ref(storage, 'imagenes/' + response.message + '.png')
-            const metadata = { contentType: 'img/png' }
-            uploadBytes(refImg, this.product.file, metadata)
-            this.product = {
-              name: '',
-              description: '',
-              file: null,
-              price: '',
-              category: 'Categoría',
-              brand: 'Marcas'
+      if (this.product.name === '' || this.product.description === '' || this.product.file === null ||
+      this.product.price === '' || this.product.category === 'Categoría*' || this.product.brand === 'Marcas*') {
+        this.$bvToast.toast('Todos los campos son obligatorios', {
+          title: 'ERROR',
+          variant: 'danger',
+          solid: true
+        })
+      } else if (!this.product.file.name.includes('.png')) {
+        this.$bvToast.toast('El formato de la imágen no es correcto, debe ser png', {
+          title: 'ERROR',
+          variant: 'danger',
+          solid: true
+        })
+      } else {
+        this.loading = true
+        shopServices.add_product(this.product)
+          .then(response => {
+            if (response.message !== null) {
+              const refImg = ref(storage, 'imagenes/' + response.message + '.png')
+              const metadata = { contentType: 'img/png' }
+              uploadBytes(refImg, this.product.file, metadata)
+              this.product = {
+                name: '',
+                description: '',
+                file: null,
+                price: '',
+                category: 'Categoría*',
+                brand: 'Marcas*'
+              }
+              this.$bvToast.toast('Operación realizada con éxito', {
+                title: 'Información',
+                variant: 'success',
+                solid: true
+              })
+              this.loading = false
+            } else {
+              this.$bvToast.toast('No se ha podido guardar', {
+                title: 'ERROR',
+                variant: 'danger',
+                solid: true
+              })
             }
-            this.$bvToast.toast('Operación realizada con éxito', {
-              title: 'Información',
-              variant: 'success',
-              solid: true
-            })
-            this.loading = false
-          } else {
+          })
+          .catch((error) => {
             this.$bvToast.toast('No se ha podido guardar', {
               title: 'ERROR',
               variant: 'danger',
               solid: true
             })
-          }
-        })
-        .catch((error) => {
-          this.$bvToast.toast('No se ha podido guardar', {
-            title: 'ERROR',
-            variant: 'danger',
-            solid: true
+            console.error(error)
+            this.loading = false
           })
-          console.error(error)
-          this.loading = false
-        })
-        .finally(() => {
-          this.loading = false
-        })
+          .finally(() => {
+            this.loading = false
+          })
+      }
     },
     getOrders () {
       shopServices.getOrders(this.user_logued)
@@ -420,21 +432,28 @@ export default {
     },
     add_employee () {
       this.showError = false
+      const expr = /^([a-zA-Z0-9_.-])+@(([a-zA-Z0-9-])+\.)+([a-zA-Z0-9]{2,4})+$/
+
       if (this.employee.email == null || this.employee.email === '' ||
           this.employee.name == null || this.employee.name === '' ||
           this.employee.password == null || this.employee.password === '' ||
           this.employee.province == null || this.employee.province === '' ||
           this.employee.direction == null || this.employee.direction === '' ||
           this.employee.cp == null || this.employee.cp === '' ||
-          this.employee.phone == null || this.employee.phone === '') {
+          this.employee.phone == null || this.employee.phone === '' ||
+          !expr.test(this.employee.email)) {
         // Cambiar el state si está vacio
-        this.emailState = this.employee.email === '' ? false : null
+        this.emailState = this.employee.email === '' || !expr.test(this.employee.email) ? false : null
         this.nameEmployeeState = this.employee.name === '' ? false : null
         this.passwordState = this.employee.password === '' ? false : null
         this.provinceState = this.employee.province === '' ? false : null
         this.directionState = this.employee.direction === '' ? false : null
         this.cpState = this.employee.cp === '' ? false : null
         this.phoneState = this.employee.phone === '' ? false : null
+        if (!expr.test(this.employee.email) && this.employee.email !== '') {
+          this.showError = true
+          this.error = 'El email no es válido'
+        }
       } else {
         userServices.add_employee(this.employee)
           .then(response => {
@@ -467,7 +486,7 @@ export default {
         .then(response => {
           if (response.Items.length > 0) {
             this.categories = response.Items
-            this.categories.unshift('Categoría')
+            this.categories.unshift('Categoría*')
             this.loadingCategories = false
           }
         })
@@ -483,7 +502,7 @@ export default {
         .then(response => {
           if (response.Items.length > 0) {
             this.brands = response.Items
-            this.brands.unshift('Marcas')
+            this.brands.unshift('Marcas*')
             this.loadingBrands = false
           }
         })

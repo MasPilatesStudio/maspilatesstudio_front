@@ -52,6 +52,14 @@
       </template>
 
       <template #default="{  }">
+        <b-alert
+          class="mt-2"
+          variant="danger"
+          fade
+          dismissible
+          :show="!paid_fee">
+          No tiene créditos sufientes
+        </b-alert>
         <p><b>Hora: </b>{{ hour }}</p>
         <p><b>Profesora: </b>{{ selectedEvent.teacher }}</p>
         <p>{{ selectedEvent.people }}/20 participantes</p>

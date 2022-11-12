@@ -67,7 +67,7 @@
       </div>
     </div>
 
-    <div id="paid-page" class="d-flex justify-content-center align-items-center">
+    <div id="paid-page" v-if="is_in_range_paid" class="d-flex justify-content-center align-items-center">
       <div class="card">
         <h1>35€</h1>
         <img src="../assets/undraw_personal_trainer_re_cnua.svg" alt="logo" class="payment_image" />
@@ -168,6 +168,7 @@ export default {
         'Jueves',
         'Viernes'
       ],
+      paid_fee_date: null,
       items: [
         { id: '8:00 - 8:50', Lunes: 'CORE', Martes: '-', Miércoles: 'CORE', Jueves: '-', Viernes: '-' },
         { id: '9:10 - 10:00', Lunes: 'PILATES', Martes: '-', Miércoles: 'PILATES', Jueves: '-', Viernes: 'ENTRENAMIENTO FUNCIONAL' },
@@ -182,9 +183,23 @@ export default {
     }
   },
   created () {
+    this.getUser()
   },
   computed: {
-    ...mapGetters({ user_logued: 'user_logued' })
+    ...mapGetters({ user_logued: 'user_logued' }),
+    is_in_range_paid () {
+      if (this.user_logued) {
+        const today = new Date()
+        const aux = new Date(this.paid_fee_date)
+        aux.setDate(aux.getDate() + 30)
+        console.log('hoy:' + today)
+        console.log('aux:' + aux)
+        if (today > aux) {
+          return true
+        }
+      }
+      return false
+    }
   },
   methods: {
     check () {
@@ -193,6 +208,19 @@ export default {
         this.error = 'Todos los campos son obligatorios'
         return false
       } else return true
+    },
+    getUser () {
+      if (this.user_logued) {
+        userServices.get_user(this.user_logued.email)
+          .then(response => {
+            this.paid_fee_date = response.response.pay_date
+            this.loadingUser = false
+          })
+          .catch((error) => {
+            console.error(error)
+            this.loadingUser = false
+          })
+      }
     },
     pay_monthly_fee () {
       if (!this.user_logued) {

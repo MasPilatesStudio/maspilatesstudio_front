@@ -26,6 +26,9 @@ const routes = [
     components: {
       header: () => import('@/views/Header.vue'),
       default: () => import('@/views/Profile')
+    },
+    meta: {
+      requireAuth: true
     }
   },
   {
@@ -34,6 +37,9 @@ const routes = [
     components: {
       header: () => import('@/views/Header.vue'),
       default: () => import('@/views/Profile')
+    },
+    meta: {
+      requireAuth: true
     }
   },
   {
