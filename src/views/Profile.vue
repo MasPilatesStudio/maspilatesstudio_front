@@ -461,6 +461,16 @@ export default {
               this.showError = true
               this.error = response.message
             } else {
+              this.employee = {
+                email: '',
+                name: '',
+                password: '',
+                province: '',
+                direction: '',
+                cp: '',
+                phone: '',
+                rol: 'Employee'
+              }
               this.$bvToast.toast('Empleado guardado correctamente', {
                 title: 'ÉXITO',
                 variant: 'success',
