@@ -36,7 +36,7 @@
                   :state="passwordCheckState"
                   @change="passwordCheckState = null" />
                  <b-alert
-                    class="m-2"
+                    class="mt-2 mb-2"
                     variant="danger"
                     fade
                     dismissible
@@ -129,6 +129,11 @@ export default {
             this.showError = true
             this.error = response.message
           } else {
+            this.$bvToast.toast('Usuario creado correctamente', {
+              title: 'Éxito',
+              variant: 'success',
+              solid: true
+            })
             // Redirect to inicio
             this.$router.push('/')
           }
