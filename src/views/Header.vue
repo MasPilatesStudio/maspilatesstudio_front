@@ -70,7 +70,7 @@ export default {
             this.$store.commit('del_count_products')
             this.$store.commit('set_products', [])
             this.$router.push('/')
-            this.$router.go(0)
+            setTimeout(this.$router.go(0), 2000)
           }
         })
         .catch((error) => {
