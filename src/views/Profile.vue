@@ -105,7 +105,7 @@
                       {{ data.item.articles }}
                     </template>
                     <template #cell(total_price)="data">
-                      {{ data.item.total_price }}€
+                      {{ data.item.total_price.toFixed(2) }}€
                     </template>
                     <template #cell(id_user)="data" v-if="user_logued.rol === 'Administrator' || user_logued.rol === 'Employee'">
                       {{ data.item.id_user }}
