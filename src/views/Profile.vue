@@ -59,11 +59,12 @@
                       placeholder="Nombre*" />
                     <b-form-textarea
                       v-model="product.description"
+                      maxlength="110"
                       placeholder="Descripción*"
                       class="mt-2" />
+                    <p class="text-left ml-2 small">{{product.description.length}}/110</p>
                     <b-form-input
                       v-model="product.price"
-                      class="mt-2"
                       type="number"
                       placeholder="Precio*" />
                     <b-form-file
